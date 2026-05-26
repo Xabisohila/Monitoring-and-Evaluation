@@ -172,7 +172,7 @@ public partial class pageAddPOA : System.Web.UI.Page
         if (endYear < startYear)
         {
             lblMessage.Text     = "End Year must be greater than or equal to Start Year.";
-            lblMessage.CssClass = "validation-summary";
+            lblMessage.CssClass = "msg-error";
             lblMessage.Visible  = true;
             return;
         }
@@ -198,21 +198,21 @@ public partial class pageAddPOA : System.Web.UI.Page
         if (newPOAId > 0)
         {
             lblMessage.Text     = "Programme of Action (POA) added successfully! New ID: " + newPOAId;
-            lblMessage.CssClass = "success-message";
+            lblMessage.CssClass = "msg-success";
             lblMessage.Visible  = true;
             ClearForm();
         }
         else
         {
             lblMessage.Text     = "Error: Failed to add POA. Please try again.";
-            lblMessage.CssClass = "validation-summary";
+            lblMessage.CssClass = "msg-error";
             lblMessage.Visible  = true;
         }
     }
 
     protected void btnCancel_Click(object sender, EventArgs e)
     {
-        Response.Redirect(hlBackToOverview.NavigateUrl);
+        Response.Redirect("pagePlanningOverview.aspx");
     }
 
     private void ClearForm()

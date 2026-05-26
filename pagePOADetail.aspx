@@ -264,7 +264,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
                                 <%# Eval("InterventionStartYear") %> &ndash; <%# Eval("InterventionEndYear") %>
                             </span>
                             <a href='<%# "pageEditIntervention.aspx?id=" + Eval("InterventionID") %>' class="act-btn">Edit</a>
-                            <a href='<%# "pageAddIndicator.aspx?interventionId=" + Eval("InterventionID") %>' class="act-btn act-btn-green">+ Indicator</a>
+                            <a href='<%# "pageAddIndicator.aspx?interventionId=" + Eval("InterventionID") + "&poaId=" + CurrentPoaId %>' class="act-btn act-btn-green">+ Indicator</a>
                             <a href='<%# "pageAddBudget.aspx?interventionId=" + Eval("InterventionID") %>' class="act-btn act-btn-green">+ Budget</a>
                         </div>
                     </div>

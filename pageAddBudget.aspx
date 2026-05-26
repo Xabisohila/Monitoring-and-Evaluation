@@ -225,8 +225,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
         <%-- Action buttons --%>
         <div class="btn-row">
             <asp:Button ID="btnSubmit" runat="server" Text="Add Budget Entry"
-                OnClick="btnSubmit_Click" CssClass="btn-primary"
-                OnClientClick="return showConfirm('<%= btnSubmit.UniqueID %>');" />
+                OnClick="btnSubmit_Click" CssClass="btn-primary" />
             <asp:Button ID="btnCancel" runat="server" Text="Cancel"
                 OnClick="btnCancel_Click" CausesValidation="false" CssClass="btn-secondary" />
         </div>
@@ -258,31 +257,4 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
 
 </div>
 
-<%-- Confirmation modal --%>
-<div id="confirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:12px;padding:32px 28px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;font-family:'Segoe UI',Roboto,Arial,sans-serif;">
-        <div style="width:52px;height:52px;background:#fef9c3;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;color:#d97706;">&#9998;</div>
-        <h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a2b4a;">Confirm Save</h3>
-        <p style="margin:0 0 24px;font-size:13px;color:#64748b;">Are you sure you want to save this record?</p>
-        <div style="display:flex;gap:10px;justify-content:center;">
-            <button type="button" onclick="cancelConfirm()" style="padding:9px 22px;border-radius:8px;border:1.5px solid #dce3ec;background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:#1a2b4a;">Cancel</button>
-            <button type="button" onclick="doConfirm()" style="padding:9px 22px;border-radius:8px;border:none;background:#1d6f42;color:#fff;cursor:pointer;font-size:13px;font-weight:600;">Yes, Save</button>
-        </div>
-    </div>
-</div>
-<script type="text/javascript">
-    var _uniqueId = '';
-    function showConfirm(uniqueId) {
-        _uniqueId = uniqueId;
-        document.getElementById('confirmModal').style.display = 'flex';
-        return false;
-    }
-    function doConfirm() {
-        document.getElementById('confirmModal').style.display = 'none';
-        __doPostBack(_uniqueId, '');
-    }
-    function cancelConfirm() {
-        document.getElementById('confirmModal').style.display = 'none';
-    }
-</script>
 </asp:Content>

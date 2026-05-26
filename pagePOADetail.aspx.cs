@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 public partial class pagePOADetail : System.Web.UI.Page
 {
     private DataSet currentPOADetailsDataSet;
+    protected string CurrentPoaId { get; private set; }
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -81,6 +82,7 @@ public partial class pagePOADetail : System.Web.UI.Page
 
         // Edit POA link
         string thisPOAId = Col(r, "POA_ID", poaId.ToString());
+        CurrentPoaId = thisPOAId;
         hlEditPOA.NavigateUrl = "pageEditPOA.aspx?id=" + thisPOAId;
 
         // PMTDP Priority — SP returns ID only; look up the name
@@ -171,6 +173,7 @@ public partial class pagePOADetail : System.Web.UI.Page
             gvBudgets.DataSource = dv;
             gvBudgets.DataBind();
         }
+
     }
 
     private void ShowError(string message)

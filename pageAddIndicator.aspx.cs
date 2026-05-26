@@ -19,6 +19,10 @@ public partial class pageAddIndicator : System.Web.UI.Page
             hlBackToOverview.NavigateUrl  = backUrl;
             hlBackToOverview2.NavigateUrl = backUrl;
 
+            string qsPoaId = Request.QueryString["poaId"];
+            if (!string.IsNullOrEmpty(qsPoaId))
+                hfPoaId.Value = qsPoaId;
+
             string qsId = Request.QueryString["interventionId"];
             if (!string.IsNullOrEmpty(qsId))
             {
@@ -97,6 +101,10 @@ public partial class pageAddIndicator : System.Web.UI.Page
 
     protected void btnCancel_Click(object sender, EventArgs e)
     {
-        Response.Redirect(hlBackToOverview.NavigateUrl);
+        string poaId = hfPoaId.Value;
+        if (!string.IsNullOrEmpty(poaId) && poaId != "0")
+            Response.Redirect("pagePOADetail.aspx?id=" + poaId);
+        else
+            Response.Redirect("pagePlanningOverview.aspx");
     }
 }
