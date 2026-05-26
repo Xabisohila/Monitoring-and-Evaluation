@@ -1,0 +1,1319 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Collections;
+using System.Drawing;
+
+
+
+public partial class PlanningGA : System.Web.UI.Page
+{
+    clsMnERecord oMnERecord = new clsMnERecord();
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!Page.IsPostBack == true)
+        {
+            LoadPlanningData();
+            lblFinancialYear.Text = (string)Session["FinancialYearText"];
+         
+        }
+        else
+        {
+           
+        }
+
+        
+    }
+
+    public void LoadPlanningData()
+    {
+        AccordionPane8.Visible = true;
+        AccordionPane9.Visible = true;
+        AccordionPane10.Visible = true;
+
+        
+
+        //lblMessage.Text = Convert.ToString(oMnERecord.ClusterName);
+        //Session["Cluster"] = lblMessage.Text;
+        if ((string)Session["StrategicPriority"] == "1")
+        {
+            lblFocusArea1.Text = "PMTDP-O-1: Intervention-1. Capacity building and intervention in distressed state institutions, including traditional institutions (SOPA) (EXCO Lekgotla) ";
+            lblFocusArea2.Text = "PMTDP-O-1: Intervention-2. MECs and HODs  Performance Management";
+            lblFocusArea3.Text = "PMTDP-O-1: Intervention-3. Implement Local Government Performance Management Systems";
+            lblFocusArea4.Text =  "PMTDP-O-1: Intervention-4.Management of The Political - Administrative Interface";
+            lblFocusArea5.Text = "PMTDP-O-1: Intervention-5. Strengthen Governance System of State Owned Entities";
+            lblFocusArea6.Text = "PMTDP-O-1: Intervention-6. Development and renewal of provincial leadership and management including human capital management";
+            lblFocusArea7.Text = "PMTDP-O-1: Intervention-7. Improve disaster management in the province";
+            
+            AccordionPane8.Visible = false;
+            AccordionPane9.Visible = false;
+            AccordionPane10.Visible = false;
+            AccordionPane11.Visible = false;
+
+            /*Session["FocusArea1"] = "1";
+            Session["FocusArea2"] = "2";
+            Session["FocusArea3"] = "3";*/
+            //Session["FocusArea4"] = "4";
+            //Session["FocusArea5"] = "5";
+            //Session["FocusArea6"] = "6";
+            //Session["FocusArea7"] = "7";
+            lblPDPGoal.Text = "Capable Democratic Institutions";
+            populateFocusArea1();
+            populateFocusArea2();
+            populateFocusArea3();
+            populateFocusArea4();
+            populateFocusArea5();
+            populateFocusArea6();
+            populateFocusArea7();
+            //populateFocusArea8();
+            //populateFocusArea9();
+            //populateFocusArea10();
+        }
+        else if ((string)Session["StrategicPriority"] == "2")
+        {
+            lblFocusArea1.Text = "PMTDP-O-2: Intervention-1. Investment promotion (including stimulus package)(SOPA & EXCO LEKGOTLA)";
+            lblFocusArea2.Text = "PMTDP-O-2: Intervention-2. Ensure a growing, innovative and diversified SMME led economy with a focus on township and rural economic development";
+            lblFocusArea3.Text = "PMTDP-O-2: Intervention-3. Reduce red-tape by improving the regulatory environment to enhance the ease of doing business (EXCO LEKGOTLA)";
+            lblFocusArea4.Text = "PMTDP-O-2: Intervention-4. Research and development to support industry and enterprise development (EXCO LEKGOTLA)";
+            lblFocusArea5.Text = "PMTDP-O-2: Intervention-5. Support provincial priority sectors";
+            lblFocusArea6.Text = "PMTDP-O-2: Intervention-6. Support localisation and industrialization through government procurement";
+            lblFocusArea7.Text = "PMTDP-O-2: Intervention-7. Set aside for women, youth and people with disabilities SMMEs";
+            lblFocusArea8.Text = "PMTDP-O-2: Intervention-8. Job creation through several catalytic projects and government specific interventions (EXCO LEKGOTLA)";
+            lblFocusArea9.Text = "PMTDP-O-2: Intervention-9. Implement comprehensive youth initiatives (SOPA & EXCO LEKGOTLA)";
+            lblFocusArea10.Text = "PMTDP-O-2: Intervention-10. Creating work opportunities through EPWP";
+            lblFocusArea11.Text = "PMTDP-O-2: Intervention-9. Review and implementation of an Infrastructure and Construction SMME Development Strategy to include diversified exit strategies and sustainable jobs ";
+
+            AccordionPane8.Visible = true;
+            AccordionPane9.Visible = true;
+            AccordionPane10.Visible = true;
+            AccordionPane11.Visible = true;
+
+
+            Session["FocusArea1"] = "8";
+            Session["FocusArea2"] = "9";
+            Session["FocusArea3"] = "10";
+            Session["FocusArea4"] = "11";
+            Session["FocusArea5"] = "12";
+            Session["FocusArea6"] = "13";
+            Session["FocusArea7"] = "14";
+            Session["FocusArea8"] = "15";
+            Session["FocusArea9"] = "16";
+            Session["FocusArea10"] = "17";
+            lblPDPGoal.Text = "An enabling infrastructure networkA growing, inclusive and equitable Economy";
+            populateFocusArea1();
+            populateFocusArea2();
+            populateFocusArea3();
+            populateFocusArea4();
+            populateFocusArea5();
+            populateFocusArea6();
+            populateFocusArea7();
+            populateFocusArea8();
+            populateFocusArea9();
+            populateFocusArea10();
+            populateFocusArea11();
+        }
+
+
+        lblStrategicPriority.Text = (string)Session["StrategicPriorityName"];
+        lblClusterWGName.Text = (string)Session["ClusterWGName"];
+    }
+
+    protected void populateFocusArea1()
+    {
+        try
+        {
+            gvIntervention1.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 1,  Convert.ToInt16(Session["StrategicPriority"]));
+            gvIntervention1.AutoGenerateColumns = false;
+            gvIntervention1.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea2()
+    {
+        try
+        {
+            gvFocusArea2.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 2, Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea2.AutoGenerateColumns = false;
+            gvFocusArea2.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea3()
+    {
+        try
+        {
+            gvFocusArea3.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]),3,  Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea3.AutoGenerateColumns = false;
+            gvFocusArea3.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea4()
+    {
+        try
+        {
+            gvFocusArea4.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]),4,  Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea4.AutoGenerateColumns = false;
+            gvFocusArea4.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea5()
+    {
+        try
+        {
+            gvFocusArea5.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 5, Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea5.AutoGenerateColumns = false;
+            gvFocusArea5.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea6()
+    {
+        try
+        {
+            gvFocusArea6.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 6, Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea6.AutoGenerateColumns = false;
+            gvFocusArea6.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea7()
+    {
+        try
+        {
+            gvFocusArea7.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 7,  Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea7.AutoGenerateColumns = false;
+            gvFocusArea7.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea8()
+    {
+        try
+        {
+            gvFocusArea8.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 8,  Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea8.AutoGenerateColumns = false;
+            gvFocusArea8.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea9()
+    {
+        try
+        {
+            gvFocusArea9.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 9, Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea9.AutoGenerateColumns = false;
+            gvFocusArea9.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    protected void populateFocusArea10()
+    {
+        try
+        {
+            gvFocusArea10.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 10, Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea10.AutoGenerateColumns = false;
+            gvFocusArea10.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    protected void populateFocusArea11()
+    {
+        try
+        {
+            gvFocusArea11.DataSource = oMnERecord.Select_PlanningData(Convert.ToInt16(Session["Cluster"]), 11, Convert.ToInt16(Session["StrategicPriority"]));
+            gvFocusArea11.AutoGenerateColumns = false;
+            gvFocusArea11.DataBind();
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+
+
+
+    protected void gvIntervention1_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvIntervention1.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvIntervention1.Rows[i];
+            GridViewRow previousRow = gvIntervention1.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+
+                {
+                    if (previousRow.Cells[j].RowSpan == 0)
+                    {
+                        if (row.Cells[j].RowSpan == 0)
+                        {
+                            previousRow.Cells[j].RowSpan += 2;
+                        }
+                        else
+                        {
+                            previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                        }
+                        row.Cells[j].Visible = false;
+                    }
+                }
+            }
+        }
+
+
+    
+   }
+    protected void gvFocusArea2_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea2.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea2.Rows[i];
+            GridViewRow previousRow = gvFocusArea2.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea3_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea3.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea3.Rows[i];
+            GridViewRow previousRow = gvFocusArea3.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea4_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea4.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea4.Rows[i];
+            GridViewRow previousRow = gvFocusArea4.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea5_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea5.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea5.Rows[i];
+            GridViewRow previousRow = gvFocusArea5.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea6_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea6.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea6.Rows[i];
+            GridViewRow previousRow = gvFocusArea6.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea7_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea7.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea7.Rows[i];
+            GridViewRow previousRow = gvFocusArea7.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea8_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea8.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea8.Rows[i];
+            GridViewRow previousRow = gvFocusArea8.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea9_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea9.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea9.Rows[i];
+            GridViewRow previousRow = gvFocusArea9.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+    protected void gvFocusArea10_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea10.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea10.Rows[i];
+            GridViewRow previousRow = gvFocusArea10.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+
+    protected void gvFocusArea11_DataBound(object sender, EventArgs e)
+    {
+        for (int i = gvFocusArea11.Rows.Count - 1; i > 0; i--)
+        {
+            GridViewRow row = gvFocusArea11.Rows[i];
+            GridViewRow previousRow = gvFocusArea11.Rows[i - 1];
+            for (int j = 0; j < row.Cells.Count; j++)
+            {
+                if (row.Cells[j].Text == previousRow.Cells[j].Text)
+                    if ((row.Cells[j].Text == previousRow.Cells[j].Text) && (row.Cells[j].Text.Trim() != "" && previousRow.Cells[j].Text.Trim() != ""))
+                    {
+                        if (previousRow.Cells[j].RowSpan == 0)
+                        {
+                            if (row.Cells[j].RowSpan == 0)
+                            {
+                                previousRow.Cells[j].RowSpan += 2;
+                            }
+                            else
+                            {
+                                previousRow.Cells[j].RowSpan = row.Cells[j].RowSpan + 1;
+                            }
+                            row.Cells[j].Visible = false;
+                        }
+                    }
+            }
+        }
+
+    }
+
+    protected void btnSubmitFocusArea1_Click(object sender, EventArgs e)
+    {
+       
+        try
+        {
+            for (int i = 0; i < gvIntervention1.Rows.Count; ++i)
+            {
+                Label Id = gvIntervention1.Rows[i].FindControl("lblKeyResult1Id") as Label;
+                TextBox Baseline = gvIntervention1.Rows[i].FindControl("txtFA1Baseline") as TextBox;
+                TextBox AnnualTarget = gvIntervention1.Rows[i].FindControl("txtFA1AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvIntervention1.Rows[i].FindControl("txtFA1Q1Planning") as TextBox;
+                TextBox Q2Planning = gvIntervention1.Rows[i].FindControl("txtFA1Q2Planning") as TextBox;
+                TextBox Q3Planning = gvIntervention1.Rows[i].FindControl("txtFA1Q3Planning") as TextBox;
+                TextBox Q4Planning = gvIntervention1.Rows[i].FindControl("txtFA1Q4Planning") as TextBox;
+                TextBox Total = gvIntervention1.Rows[i].FindControl("txtFA1Total") as TextBox;
+
+
+                oMnERecord.KeyResultId = Convert.ToInt16(Id.Text);
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16((string)Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+               ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+                
+            }
+            
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+
+    protected void btnSubmitFocusArea2_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea2.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea2.Rows[i].FindControl("lblKeyResult2Id") as Label;
+                TextBox Baseline = gvFocusArea2.Rows[i].FindControl("txtFA2Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea2.Rows[i].FindControl("txtFA2AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea2.Rows[i].FindControl("txtFA2Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea2.Rows[i].FindControl("txtFA2Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea2.Rows[i].FindControl("txtFA2Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea2.Rows[i].FindControl("txtFA2Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea2.Rows[i].FindControl("txtFA2Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea3_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea3.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea3.Rows[i].FindControl("lblKeyResult3Id") as Label;
+                TextBox Baseline = gvFocusArea3.Rows[i].FindControl("txtFA3Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea3.Rows[i].FindControl("txtFA3AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea3.Rows[i].FindControl("txtFA3Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea3.Rows[i].FindControl("txtFA3Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea3.Rows[i].FindControl("txtFA3Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea3.Rows[i].FindControl("txtFA3Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea3.Rows[i].FindControl("txtFA3Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea4_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea4.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea4.Rows[i].FindControl("lblKeyResult4Id") as Label;
+                TextBox Baseline = gvFocusArea4.Rows[i].FindControl("txtFA4Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea4.Rows[i].FindControl("txtFA4AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea4.Rows[i].FindControl("txtFA4Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea4.Rows[i].FindControl("txtFA4Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea4.Rows[i].FindControl("txtFA4Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea4.Rows[i].FindControl("txtFA4Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea4.Rows[i].FindControl("txtFA4Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea5_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea5.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea5.Rows[i].FindControl("lblKeyResult5Id") as Label;
+                TextBox Baseline = gvFocusArea5.Rows[i].FindControl("txtFA5Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea5.Rows[i].FindControl("txtFA5AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea5.Rows[i].FindControl("txtFA5Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea5.Rows[i].FindControl("txtFA5Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea5.Rows[i].FindControl("txtFA5Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea5.Rows[i].FindControl("txtFA5Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea5.Rows[i].FindControl("txtFA5Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea6_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea6.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea6.Rows[i].FindControl("lblKeyResult6Id") as Label;
+                TextBox Baseline = gvFocusArea6.Rows[i].FindControl("txtFA6Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea6.Rows[i].FindControl("txtFA6AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea6.Rows[i].FindControl("txtFA6Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea6.Rows[i].FindControl("txtFA6Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea6.Rows[i].FindControl("txtFA6Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea6.Rows[i].FindControl("txtFA6Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea6.Rows[i].FindControl("txtFA6Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea7_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea7.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea7.Rows[i].FindControl("lblKeyResult7Id") as Label;
+                TextBox Baseline = gvFocusArea7.Rows[i].FindControl("txtFA7Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea7.Rows[i].FindControl("txtFA7AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea7.Rows[i].FindControl("txtFA7Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea7.Rows[i].FindControl("txtFA7Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea7.Rows[i].FindControl("txtFA7Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea7.Rows[i].FindControl("txtFA7Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea7.Rows[i].FindControl("txtFA7Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea8_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea8.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea8.Rows[i].FindControl("lblKeyResult8Id") as Label;
+                TextBox Baseline = gvFocusArea8.Rows[i].FindControl("txtFA8Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea8.Rows[i].FindControl("txtFA8AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea8.Rows[i].FindControl("txtFA8Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea8.Rows[i].FindControl("txtFA8Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea8.Rows[i].FindControl("txtFA8Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea8.Rows[i].FindControl("txtFA8Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea8.Rows[i].FindControl("txtFA8Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea9_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea9.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea9.Rows[i].FindControl("lblKeyResult9Id") as Label;
+                TextBox Baseline = gvFocusArea9.Rows[i].FindControl("txtFA9Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea9.Rows[i].FindControl("txtFA9AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea9.Rows[i].FindControl("txtFA9Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea9.Rows[i].FindControl("txtFA9Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea9.Rows[i].FindControl("txtFA9Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea9.Rows[i].FindControl("txtFA9Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea9.Rows[i].FindControl("txtFA9Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+    protected void btnSubmitFocusArea10_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea10.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea10.Rows[i].FindControl("lblKeyResult10Id") as Label;
+                TextBox Baseline = gvFocusArea10.Rows[i].FindControl("txtFA10Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea10.Rows[i].FindControl("txtFA10AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea10.Rows[i].FindControl("txtFA10Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea10.Rows[i].FindControl("txtFA10Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea10.Rows[i].FindControl("txtFA10Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea10.Rows[i].FindControl("txtFA10Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea10.Rows[i].FindControl("txtFA10Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+
+    protected void btnSubmitFocusArea11_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            for (int i = 0; i < gvFocusArea11.Rows.Count; ++i)
+            {
+                Label Id = gvFocusArea11.Rows[i].FindControl("lblKeyResult10Id") as Label;
+                TextBox Baseline = gvFocusArea11.Rows[i].FindControl("txtFA11Baseline") as TextBox;
+                TextBox AnnualTarget = gvFocusArea11.Rows[i].FindControl("txtFA11AnnualTarget") as TextBox;
+                TextBox Q1Planning = gvFocusArea11.Rows[i].FindControl("txtFA11Q1Planning") as TextBox;
+                TextBox Q2Planning = gvFocusArea11.Rows[i].FindControl("txtFA11Q2Planning") as TextBox;
+                TextBox Q3Planning = gvFocusArea11.Rows[i].FindControl("txtFA11Q3Planning") as TextBox;
+                TextBox Q4Planning = gvFocusArea11.Rows[i].FindControl("txtFA11Q4Planning") as TextBox;
+                TextBox Total = gvFocusArea11.Rows[i].FindControl("txtFA11Total") as TextBox;
+
+
+                oMnERecord.AnnualTarget = AnnualTarget.Text;
+                oMnERecord.Baseline = Baseline.Text;
+                oMnERecord.Q1Planning = Q1Planning.Text;
+                oMnERecord.Q2Planning = Q2Planning.Text;
+                oMnERecord.Q3Planning = Q3Planning.Text;
+                oMnERecord.Q4Planning = Q4Planning.Text;
+                oMnERecord.Total = Total.Text;
+                oMnERecord.FinancialYear = Convert.ToInt16(Session["FinancialYear"]);
+                oMnERecord.SubmitPlanningData(Convert.ToInt16(Id.Text));
+                ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Submission Successful!')", true);
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+            //ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('File is not yet available!')", true);
+        }
+    }
+
+
+    protected void lnkKeyIndicatorFA1_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvIntervention1.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvIntervention1.Rows[i].FindControl("lblKeyResult1Id");
+                    Label KeyResult = (Label)gvIntervention1.Rows[i].FindControl("lblKeyResult1");
+                    LinkButton KeyIndicator = (LinkButton)gvIntervention1.Rows[i].FindControl("lnkKeyIndicatorFA1");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+                    
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+        
+
+    }
+
+    private void PopulateChart(int KeyIndicatorId, string KeyIndicator)
+    {
+        string[] x = new string[oMnERecord.SelectPlanningScores(KeyIndicatorId).Tables[0].Rows.Count];
+        decimal[] y = new decimal[oMnERecord.SelectPlanningScores(KeyIndicatorId).Tables[0].Rows.Count];
+        for (int i = 0; i < oMnERecord.SelectPlanningScores(KeyIndicatorId).Tables[0].Rows.Count; i++)
+        {
+            x[i] = oMnERecord.SelectPlanningScores(KeyIndicatorId).Tables[0].Rows[i][0].ToString();
+            y[i] = Convert.ToInt32(oMnERecord.SelectPlanningScores(KeyIndicatorId).Tables[0].Rows[i][1]);
+        }
+        bcKeyIndicator.Series.Add(new AjaxControlToolkit.BarChartSeries { Data = y, Name = KeyIndicator, BarColor = "#B85B3E" });
+        bcKeyIndicator.CategoriesAxis = string.Join(",", x);
+        bcKeyIndicator.ChartTitle = (string)Session["ChartTitle"];
+
+
+    }
+    protected void lnkKeyIndicatorFA2_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea2.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea2.Rows[i].FindControl("lblKeyResult2Id");
+                    Label KeyResult = (Label)gvFocusArea2.Rows[i].FindControl("lblKeyResult2");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea2.Rows[i].FindControl("lnkKeyIndicatorFA2");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    protected void lnkKeyIndicatorFA3_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea3.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea3.Rows[i].FindControl("lblKeyResult3Id");
+                    Label KeyResult = (Label)gvFocusArea3.Rows[i].FindControl("lblKeyResult3");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea3.Rows[i].FindControl("lnkKeyIndicatorFA3");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    protected void lnkKeyIndicatorFA4_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea4.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea4.Rows[i].FindControl("lblKeyResult4Id");
+                    Label KeyResult = (Label)gvFocusArea4.Rows[i].FindControl("lblKeyResult4");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea4.Rows[i].FindControl("lnkKeyIndicatorFA4");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    protected void lnkKeyIndicatorFA5_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea5.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea5.Rows[i].FindControl("lblKeyResult5Id");
+                    Label KeyResult = (Label)gvFocusArea5.Rows[i].FindControl("lblKeyResult5");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea5.Rows[i].FindControl("lnkKeyIndicatorFA5");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    protected void lnkKeyIndicatorFA6_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea6.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea6.Rows[i].FindControl("lblKeyResult6Id");
+                    Label KeyResult = (Label)gvFocusArea6.Rows[i].FindControl("lblKeyResult6");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea6.Rows[i].FindControl("lnkKeyIndicatorFA6");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    protected void lnkKeyIndicatorFA7_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea7.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea7.Rows[i].FindControl("lblKeyResult7Id");
+                    Label KeyResult = (Label)gvFocusArea7.Rows[i].FindControl("lblKeyResult7");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea7.Rows[i].FindControl("lnkKeyIndicatorFA7");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    protected void lnkKeyIndicatorFA8_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea8.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea8.Rows[i].FindControl("lblKeyResult8Id");
+                    Label KeyResult = (Label)gvFocusArea8.Rows[i].FindControl("lblKeyResult8");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea8.Rows[i].FindControl("lnkKeyIndicatorFA8");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    protected void lnkKeyIndicatorFA9_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea9.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea9.Rows[i].FindControl("lblKeyResult9Id");
+                    Label KeyResult = (Label)gvFocusArea9.Rows[i].FindControl("lblKeyResult9");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea9.Rows[i].FindControl("lnkKeyIndicatorFA9");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+    protected void lnkKeyIndicatorFA10_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea10.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea10.Rows[i].FindControl("lblKeyResult10Id");
+                    Label KeyResult = (Label)gvFocusArea10.Rows[i].FindControl("lblKeyResult10");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea10.Rows[i].FindControl("lnkKeyIndicatorFA10");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+    protected void lnkKeyIndicatorFA11_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            GridViewRow datarow = (GridViewRow)(((Control)sender).NamingContainer);
+            int i = datarow.RowIndex;
+            foreach (GridViewRow rowItem in gvFocusArea10.Rows)
+            {
+                if (rowItem.RowIndex == i)
+                {
+
+                    Label KeyResultId = (Label)gvFocusArea10.Rows[i].FindControl("lblKeyResult11Id");
+                    Label KeyResult = (Label)gvFocusArea10.Rows[i].FindControl("lblKeyResult11");
+                    LinkButton KeyIndicator = (LinkButton)gvFocusArea10.Rows[i].FindControl("lnkKeyIndicatorFA11");
+                    Session["ChartTitle"] = KeyResult.Text;
+                    PopulateChart(Convert.ToInt16(KeyResultId.Text), KeyIndicator.Text);
+
+                    bcKeyIndicator.Visible = true;
+                }
+            }
+            //PopulateJobs();
+
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+}

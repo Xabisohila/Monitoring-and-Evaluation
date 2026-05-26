@@ -1,0 +1,26 @@
+# ASP.NET secrets — never commit
+Web.config
+
+# Visual Studio IDE files
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+
+# Uploaded user files
+uploads/
+
+# Claude AI memory
+.claude/
+
+# Compiled assets
+*.dll
+*.pdb
+*.cache
+
+# Windows
+Thumbs.db
+Desktop.ini

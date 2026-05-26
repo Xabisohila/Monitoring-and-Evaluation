@@ -1,0 +1,207 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls; // For DropDownList, Label, Repeater, GridView, etc.
+
+using System;
+using System.Data;
+using System.Web.UI.WebControls; // For DropDownList, Label, Repeater, GridView, etc.
+using YourProjectName.Data; // IMPORTANT: Reference the namespace of your PlanningOverviewRepository class
+
+//using MnE.Data; // IMPORTANT: Reference the namespace of your PlanningOverviewRepository class
+
+    public partial class pagePlanningO : System.Web.UI.Page
+    {
+        // Store the full DataSet in a private field for easier access during nested binding events
+        private DataSet currentPlanningOverviewDataSet;
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack) // This code runs only when the page is first loaded
+            {
+                PopulateDropdowns();
+                pnlOverview.Visible = false; // Initially hide the detail panel
+                lblMessage.Visible = true;   // Show the initial message
+            }
+        }
+
+        private void PopulateDropdowns()
+        {
+            PlanningOverviewRepository repo = new PlanningOverviewRepository();
+        newPlanningOverview repo1 = new newPlanningOverview();
+
+        // Populate Work Groups
+        DataTable dtWorkGroups = repo.GetAllWorkGroupsLookup();
+            ddlWorkGroups.DataSource = dtWorkGroups;
+            ddlWorkGroups.DataTextField = "WG_Name";
+            ddlWorkGroups.DataValueField = "WorkingGroupID";
+            ddlWorkGroups.DataBind();
+            ddlWorkGroups.Items.Insert(0, new ListItem("-- Select Work Group --", "0"));
+
+            // Populate PMTDP Priorities
+            DataTable dtPMTDPPriorities = repo.GetAllPMTDPPrioritiesLookup();
+            ddlPMTDPPriorities.DataSource = dtPMTDPPriorities;
+            ddlPMTDPPriorities.DataTextField = "PriorityName";
+            ddlPMTDPPriorities.DataValueField = "PMTDP_PriorityID";
+            ddlPMTDPPriorities.DataBind();
+            ddlPMTDPPriorities.Items.Insert(0, new ListItem("-- Select Priority --", "0"));
+
+            // Populate Financial Years
+            DataTable dtFinancialYears = repo.GetAllFinancialYearsLookup();
+            ddlFinancialYears.DataSource = dtFinancialYears;
+            ddlFinancialYears.DataTextField = "FY_Name";
+            ddlFinancialYears.DataValueField = "FY_ID";
+            ddlFinancialYears.DataBind();
+            ddlFinancialYears.Items.Insert(0, new ListItem("-- Select Year --", "0"));
+        }
+
+        protected void btnViewOverview_Click(object sender, EventArgs e)
+        {
+            int selectedWorkGroupId = Convert.ToInt32(ddlWorkGroups.SelectedValue);
+            int selectedPMTDPPriorityId = Convert.ToInt32(ddlPMTDPPriorities.SelectedValue);
+            int selectedFinancialYearId = Convert.ToInt32(ddlFinancialYears.SelectedValue);
+
+            // Validate selections
+            if (selectedWorkGroupId == 0 || selectedPMTDPPriorityId == 0 || selectedFinancialYearId == 0) // CORRECTED: Use || for logical OR
+            {
+                lblMessage.Text = "Please make a selection for Work Group, PMTDP Priority, and Financial Year.";
+                lblMessage.Visible = true;
+                pnlOverview.Visible = false;
+                return;
+            }
+
+            LoadPlanningOverview(selectedWorkGroupId, selectedPMTDPPriorityId, selectedFinancialYearId);
+        }
+
+        private void LoadPlanningOverview(int workGroupId, int pmtdpPriorityId, int financialYearId)
+        {
+            PlanningOverviewRepository repo = new PlanningOverviewRepository();
+        newPlanningOverview repo1 = new newPlanningOverview();
+        currentPlanningOverviewDataSet = repo.GetPlanningOverview(workGroupId, pmtdpPriorityId, financialYearId);
+
+            // Check if the DataSet and its tables are as expected (at least 5 data tables for main content)
+            if (currentPlanningOverviewDataSet != null && currentPlanningOverviewDataSet.Tables.Count >= 5)
+            {
+            // Result Set 1: PMTDP Priority Header Information (ds.Tables)
+            //if (currentPlanningOverviewDataSet.Tables.Rows.Count > 0) // CORRECTED: Access Tables
+            //{
+            //    DataRow headerRow = currentPlanningOverviewDataSet.Tables.Rows; // CORRECTED: Access Tables.Rows
+            //    lblSelectedPriorityName.Text = headerRow["PriorityFocus"].ToString();
+            //    lblFrameworkName.Text = headerRow["ImplementationFrameworkName"].ToString();
+            //    lblPDPGoal.Text = headerRow.ToString(); // CORRECTED: Access by column name
+            //    lblPriorityFocus.Text = headerRow["PriorityFocus"].ToString();
+            //    lblOverallImpact.Text = headerRow["PriorityImpact"].ToString();
+            //    lblPriorityDescription.Text = headerRow.ToString(); // CORRECTED: Access by column name
+            //}
+
+            if (currentPlanningOverviewDataSet.Tables[0].Rows.Count > 0)
+            {
+                DataRow headerRow = currentPlanningOverviewDataSet.Tables[0].Rows[0]; // Access the first row
+
+                lblSelectedPriorityName.Text = headerRow["PriorityFocus"].ToString();
+                lblFrameworkName.Text = headerRow["ImplementationFrameworkName"].ToString();
+                lblPDPGoal.Text = headerRow["PDPGoal"].ToString(); // Assuming this is the correct column
+                lblPriorityFocus.Text = headerRow["PriorityFocus"].ToString();
+                lblOverallImpact.Text = headerRow["PriorityImpact"].ToString();
+                lblPriorityDescription.Text = headerRow["PriorityDescription"].ToString(); // Assuming this is the correct column
+            }
+
+            else
+            {
+                    lblMessage.Text = "No header details found for the selected filters. Please check your data.";
+                    pnlOverview.Visible = false;
+                    lblMessage.Visible = true;
+                    return;
+                }
+
+                // Result Set 2: Programmes of Action (POAs) (ds.Tables[1])
+                DataTable poaTable = currentPlanningOverviewDataSet.Tables[1];
+                rptPOAs.DataSource = poaTable;
+                rptPOAs.DataBind();
+
+                pnlOverview.Visible = true; // Show the detail panel
+                lblMessage.Visible = false;  // Hide the message
+            }
+            else
+            {
+                lblMessage.Text = "Error: Failed to retrieve complete planning overview. Please check database configuration and data.";
+                pnlOverview.Visible = false;
+                lblMessage.Visible = true;
+            }
+        }
+
+        // Event handler for each item in the POA Repeater (rptPOAs)
+        protected void rptPOAs_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem) // CORRECTED: Use || for logical OR
+            {
+                // Get the current POA's ID from the DataItem
+                DataRowView poaRowView = (DataRowView)e.Item.DataItem; // Cast to DataRowView
+                // CORRECTED LINE: Access the "POA_ID" column from the DataRowView
+                int currentPOAId = Convert.ToInt32(poaRowView);
+
+                // Find the nested GridView for Interventions
+                GridView gvInterventions = (GridView)e.Item.FindControl("gvInterventions");
+
+                if (gvInterventions != null && currentPlanningOverviewDataSet != null && currentPlanningOverviewDataSet.Tables.Count >= 3)
+                {
+                    // Result Set 3: Interventions table from the DataSet
+                    DataTable interventionsTable = currentPlanningOverviewDataSet.Tables[2];
+
+                    // Filter interventions for the current POA
+                    DataView dvInterventions = new DataView(interventionsTable);
+                    dvInterventions.RowFilter = "POA_ID = " + currentPOAId; // CORRECTED: Removed $ and used concatenation
+
+                    gvInterventions.DataSource = dvInterventions;
+                    gvInterventions.DataBind();
+                }
+            }
+        }
+
+        // Event handler for each row in the Interventions GridView (gvInterventions)
+        // This is where you bind the nested Indicators and Budgets GridViews
+        protected void gvInterventions_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                // Get the current InterventionID from the row's DataItem
+                DataRowView interventionRowView = (DataRowView)e.Row.DataItem; // Cast to DataRowView
+                // CORRECTED LINE: Access the "InterventionID" column from the DataRowView
+                int currentInterventionId = Convert.ToInt32(interventionRowView);
+
+                // Find the nested GridViews for Indicators and Budgets
+                GridView gvInterventionIndicators = (GridView)e.Row.FindControl("gvInterventionIndicators");
+                GridView gvInterventionBudgets = (GridView)e.Row.FindControl("gvInterventionBudgets");
+
+                if (currentPlanningOverviewDataSet != null && currentPlanningOverviewDataSet.Tables.Count >= 5)
+                {
+                    // Result Set 4: Intervention Indicators table
+                    DataTable indicatorsTable = currentPlanningOverviewDataSet.Tables[3];
+                    // Result Set 5: Intervention Budgets table
+                    DataTable budgetsTable = currentPlanningOverviewDataSet.Tables[4];
+
+                    // Bind Intervention Indicators
+                    if (gvInterventionIndicators != null)
+                    {
+                        DataView dvIndicators = new DataView(indicatorsTable);
+                        dvIndicators.RowFilter = "InterventionID = " + currentInterventionId; // CORRECTED: Removed $ and used concatenation
+                        gvInterventionIndicators.DataSource = dvIndicators;
+                        gvInterventionIndicators.DataBind();
+                    }
+
+                    // Bind Intervention Budgets
+                    if (gvInterventionBudgets != null)
+                    {
+                        DataView dvBudgets = new DataView(budgetsTable);
+                        dvBudgets.RowFilter = "InterventionID = " + currentInterventionId; // CORRECTED: Removed $ and used concatenation
+                        dvBudgets.Sort = "FinancialYear ASC"; // Optional: sort budgets
+                        gvInterventionBudgets.DataSource = dvBudgets;
+                        gvInterventionBudgets.DataBind();
+                    }
+                }
+            }
+        }
+    }

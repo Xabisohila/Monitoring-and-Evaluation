@@ -1,0 +1,103 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Login.master.cs" Inherits="Login" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "">
+
+<html xmlns="">
+<head runat="server">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="dot net templates  | aspxtemplates.com">
+    <meta name="author" content="aspxtemplates.com">
+    <!-- Bootstrap Core CSS -->
+    <title>MnE</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- SmartMenus jQuery Bootstrap Addon CSS -->
+    <link href="css/jquery.smartmenus.bootstrap.css" rel="stylesheet">
+    <link href="css/owl/owl.carousel.css" rel="stylesheet" type="text/css" />
+    <link href="css/owl/owl.theme.css" rel="stylesheet" type="text/css" />
+    <link href="css/owl/owl.transitions.css" rel="stylesheet" type="text/css" />
+    <!-- Custom CSS -->
+    <link href="css/1-col-portfolio.css" rel="stylesheet">
+
+    <link href="fonts/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+
+    
+</head>
+<body>
+    <form id="form1" runat="server">
+    <!-- Header Navbar fixed top -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+               
+                <a  href="index.aspx"><i ></i><img class="logo" src="img/logo.png" alt="logo"></a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <!-- Left nav -->
+            </div>
+        </div>
+    </div>
+    <%--main Content--%>
+    <div class="container-fluid">
+        <asp:ContentPlaceHolder ID="head" runat="server">   
+    </asp:ContentPlaceHolder>
+        <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+        
+        </asp:ContentPlaceHolder>
+    </div>
+    <footer id="fh5co-footer" class="padding100">
+			
+			<div >
+				<div class="container">
+					<div class="row">
+						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.2s">
+							<h3 class="fh5co-lead">About</h3>
+							<ul>
+								<li><a href="#">OTP</a></li>
+								<li><a href="#">Contact Us</a></li>
+							</ul>
+						</div>
+						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.4s">
+							<h3 class="fh5co-lead">Support</h3>
+							<ul>
+								<li><a href="#">Terms of Service</a></li>
+								<li><a href="#">MnE Policy</a></li>
+								<li><a href="#">MnE Steering Committee</a></li>
+							</ul>
+						</div>
+						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.6s">
+							<h3 class="fh5co-lead">More Links</h3>
+							<ul>
+								<li><a href="#">Feedback</a></li>
+								<li><a href="#">Frequently Ask Questions</a></li>
+								<li><a href="#">Terms of Service</a></li>
+							</ul>
+						</div>
+
+						<div class="col-md-3 col-sm-12 col-md-pull-9 animated wow fadeInLeft" data-wow-delay="0.8s">
+							
+							<p class="fh5co-copyright"><small>&copy; 2021. All Rights Reserved. <br>	by Office of the Premier</small></p>
+							
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</footer>
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/wow.min.js" type="text/javascript"></script>
+    <script src="js/tutorial.js"></script>
+    <script src="css/owl/owl.carousel.js" type="text/javascript"></script>
+    <!-- SmartMenus jQuery plugin -->
+    <script type="text/javascript" src="js/jquery.smartmenus.js"></script>
+    <!-- SmartMenus jQuery Bootstrap Addon -->
+    <script type="text/javascript" src="js/jquery.smartmenus.bootstrap.js"></script>
+    <script src="js/contact.js" type="text/javascript"></script>
+    </form>
+</body>
+</html>

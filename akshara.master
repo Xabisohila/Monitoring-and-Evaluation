@@ -1,0 +1,584 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="akshara.master.cs" Inherits="preview_dotnet_templates_akshara_multi_master_akshara" %>
+<%@ Register TagPrefix="uc" TagName="WorkflowStatus" Src="~/WorkflowStatusPanel.ascx" %>
+
+<%--<%@ Register TagPrefix="uc" TagName="Notifications" Src="~/Notifications.ascx" %>
+<uc:Notifications runat="server" ID="Notifications1" />--%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "">
+
+<html xmlns="">
+<head runat="server">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="dot net templates  | aspxtemplates.com">
+    <meta name="author" content="aspxtemplates.com">
+    <!-- Bootstrap Core CSS -->
+    <title>M & E</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- SmartMenus jQuery Bootstrap Addon CSS -->
+    <link href="css/jquery.smartmenus.bootstrap.css" rel="stylesheet">
+    <link href="css/owl/owl.carousel.css" rel="stylesheet" type="text/css" />
+    <link href="css/owl/owl.theme.css" rel="stylesheet" type="text/css" />
+    <link href="css/owl/owl.transitions.css" rel="stylesheet" type="text/css" />
+    <!-- Custom CSS -->
+    <link href="css/1-col-portfolio.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/responsive.css" rel="stylesheet">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="engine1/style.css" />
+	<script type="text/javascript" src="engine1/jquery.js"></script>
+   
+
+    <link href="fonts/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:/ -->
+    <!--[if lt IE 9]>
+
+    <![endif]-->  
+
+
+
+    <style type="text/css">
+        .dropdown-menu{
+            min-width:200px;
+        }
+    </style>
+
+    <asp:ContentPlaceHolder ID="head" runat="server">   
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server" autocomplete="off">
+    <!-- Header Navbar fixed top -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span
+                        class="icon-bar"></span><span class="icon-bar"></span>
+                </button>
+                <a href="home.aspx"><i ></i><img id="imgLogo1" runat="server" class="logo" src="img/logo.png" alt="logo"/></a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <!-- Left nav -->
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="home.aspx">Home</a></li>
+
+
+
+
+
+                    <%--New--%>
+                    
+                    <li class="dropdown" id="ddl_PlanningUnit" runat="server" visible="false">
+                        <a id="A3" runat="server" class="dropdown-toggle" data-toggle="dropdown"
+                            role="button" aria-haspopup="true" aria-expanded="false">Planning Unit<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="new_PU_ClusterWG.aspx">PU Clusters</a></li>
+                            <li><a href="new_PU_View.aspx">PU Clusters2</a></li>
+                            <li><a href="i_PMTDPUpload.aspx">PMTDP Upload</a></li>
+                            <li><a href="i_PMTDPPriorityList.aspx">Assign Clusters</a></li>
+                            <li><a href="pageAddPOA.aspx">Create POA</a></li>
+                            <li><a href="i_POAList.aspx">POA List</a></li>
+                            <li><a href="pageAddIntervention.aspx">Add Intervention</a></li>
+                            <li><a href="i_QuarterlyTargets.aspx">Quarterly Targets</a></li>
+                            <li><a href="ii_AssignIndicatorOwners.aspx">Assign Indicator Owners</a></li>
+                            <li><a href="i_POAUpload.aspx">POA Upload</a></li>
+
+                            <li><a href="i_PriorityAdmin.aspx">Strategic Priorities</a></li>
+                            <li><a href="i_Cluster.aspx">Provincial Clusters</a></li>
+                            <li><a href="i_ProgrammeAdmin.aspx">Integration Programme - WG</a></li>
+                            <li><a href="i_ProgrammeInstitutions.aspx">Supporting Institutuions - WG</a></li>
+                            <li><a href="i_OutcomeAdmin.aspx">Impact (Outcomes)</a></li>
+                            <li><a href="i_IndicatorAdmin.aspx">Indicators</a></li>
+                            <li><a href="i_AnnualTargets.aspx">Annual Targets</a></li>
+                            <li><a href="i_SystemPeriodsAdmin.aspx">System Periods</a></li>
+
+                            <li><a href="j_PMTDPApprovalView.aspx">Approval View</a></li>
+                            <li><a href="j_PMTDPApprovalList.aspx">Approval List</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown" id="ddl_CapturerUnit" runat="server" visible="false">
+                        <a id="A4" runat="server" class="dropdown-toggle" data-toggle="dropdown"
+                            role="button" aria-haspopup="true" aria-expanded="false">Dept/Entity Capturer<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="ii_DeptQuarterlyTargetsUpload.aspx">Quarterly Targets Upload</a></li>
+                            <%--<li><a href="i_QuarterlyTargetsUpload.aspx">Quarterly Targets Upload</a></li>--%>
+                            <li><a href="i_QuarterlyTargets.aspx">Quarterly Targets</a></li>
+                            <li><a href="i_MyTasks.aspx">My Tasks.aspx</a></li>
+                            <li><a href="i_ReportSubmit.aspx">Report Submit</a></li>
+                            <li><a href="i_MySubmissions.aspx">My Submissions</a></li>
+                            <li><a href="ii_ChangeRequests.aspx">My Change Requests</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown" id="ddl_HOD_CEO" runat="server" visible="false">
+                        <a id="A5" runat="server" class="dropdown-toggle" data-toggle="dropdown"
+                            role="button" aria-haspopup="true" aria-expanded="false">HOD/Entity CEO<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="ii_ApprovalInbox.aspx">Approval Inbox</a></li>
+                            <li><a href="i_Approval.aspx">Approval (HOD/CEO)</a></li>
+                            
+                            
+                            
+
+                        </ul>
+                    </li>
+
+                    <%--New--%>
+
+
+
+
+
+
+
+
+                    <%--Planning Unit Start--%>
+
+                    <li id="ddl_PU_Inbox" runat="server" visible="false"><a href="i_PU_Inbox.aspx">Inbox</a></li>
+
+                    <li class="dropdown" id="ddl_PU_Upload" runat="server" visible="false">
+                        <a id="A6" runat="server" class="dropdown-toggle" data-toggle="dropdown"
+                            role="button" aria-haspopup="true" aria-expanded="false">Upload<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="i_PMTDPUpload.aspx">PMTDP Upload</a></li>
+                            <li><a href="j_PMTDPApprovalList.aspx">Approval List</a></li>
+                            <li><a href="j_PMTDPApprovalView.aspx">Approval View</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="i_PMTDPPriorityList.aspx">Assign Clusters</a></li>
+                            <li><a href="pageAddPOA.aspx">Create POA</a></li>
+                            <li><a href="i_POAList.aspx">POA List</a></li>
+                            <li><a href="pageAddIntervention.aspx">Add Intervention</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="i_QuarterlyTargets.aspx">Quarterly Targets</a></li>
+                            <li><a href="ii_AssignIndicatorOwners.aspx">Assign Indicator Owners</a></li>
+                        </ul>
+                    </li>
+
+                    <%--Planning Unit Finish--%>
+
+
+
+
+
+
+
+
+
+
+
+                    <%--Department Entity Unit Start--%>
+
+                    <li id="Dept_Entiry" runat="server" visible="false">
+                        <li><a href="i_MyTasks.aspx">My Tasks</a></li>
+                       
+                        <li class="dropdown" id="Li2" runat="server">
+                            <a id="A8" runat="server" class="dropdown-toggle" data-toggle="dropdown"
+                                role="button" aria-haspopup="true" aria-expanded="false">Reports<span class="caret"></span></a>
+                            <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                                <li><a href="i_ReportSubmit.aspx">Add New</a></li>
+                                <li><a href="i_MySubmissions.aspx">View Submissions</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="dropdown" id="Li1" runat="server">
+                            <a id="A7" runat="server" class="dropdown-toggle" data-toggle="dropdown"
+                                role="button" aria-haspopup="true" aria-expanded="false">Manage<span class="caret"></span></a>
+                            <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                                <li><a href="ii_DeptQuarterlyTargetsUpload.aspx">Upload Q Targets</a></li>
+                                <li><a href="i_QuarterlyTargets.aspx">Update Existing Q Targets</a></li>
+                            </ul>
+                        </li>
+                    </li>
+
+
+                    <%--Department Entity Unit End--%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <%-- Updates start --%>
+
+                    <li class="dropdown" id="updates1" runat="server" visible="false"><a href="" class="dropdown-toggle" data-toggle="dropdown"
+                        role="button" aria-haspopup="true" aria-expanded="false">Updates<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+
+
+
+                            <li><a href="i_PMTDPUpload.aspx">PMTDP Upload</a></li>
+                            <li><a href="i_POAUpload.aspx">POA Upload</a></li>
+
+                            <li><a href="i_PriorityAdmin.aspx">Priority Focus</a></li>
+                            <li><a href="i_ProgrammeAdmin.aspx">Integration Programme</a></li>
+                            <li><a href="i_OutcomeAdmin.aspx"> Impact (Outcomes)</a></li>
+                            <li><a href="i_IndicatorAdmin.aspx">Add Indicators</a></li>
+                            
+                            <li><a href="i_SystemPeriodsAdmin.aspx">System Periods</a></li>
+                            <li><a href="i_ReportSubmit.aspx">Report Submit</a></li>
+                            <li><a href="i_MySubmissions.aspx">My Submissions</a></li>
+  
+                            <li><a href="i_MyTasks.aspx">My Tasks.aspx</a></li>
+
+                            <li><a href="i_AnnualTargets.aspx">Annual Targets</a></li>
+                            <li><a href="i_QuarterlyTargets.aspx">Quarterly Targets</a></li>
+                            <li><a href="i_QuarterSummary.aspx">Quarter Summary</a></li>
+                            <li><a href="i_Approval.aspx">Approval (HOD/CEO)</a></li>
+                            <%--<li><a href="pagePOADetail.aspx?id=701">5</a></li>
+                            <li><a href="pageAddPOA.aspx">6</a></li>
+                            <li><a href="pageEditPOA.aspx?id=701">7</a></li>--%>
+
+                            <li><a href="i_QAInbox1.aspx">QA Inbox</a></li>
+                            <li><a href="ii_AssignIndicatorOwners.aspx">Assign Indicator Owner</a></li>
+                            <li><a href="ii_AssignIndicatorWorkingGroup.aspx">Assign Indicator WG</a></li>
+                            <li><a href="ii_ChangeRequests.aspx">Manage CR</a></li>
+                            <li><a href="i_MonitoringDashboard.aspx">Monitoring Dashboard</a></li>
+                            <li><a href="i_NonCompliance.aspx">Reports - NonCompliance</a></li>
+                        </ul>
+                    </li>
+
+
+
+                    <%-- Updates end --%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <%-- God Mode --%>
+
+                    <li id="ClusterWG_0" runat="server" visible="false"><a href="designedClusterWG.aspx">Cluster</a></li>
+
+                    <%-- God Mode --%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <%--<li><a href="ClusterWG.aspx">Cluster</a></li>--%>
+
+
+
+
+
+
+
+<%--                    <li><a href="testCluster.aspx">testCluster</a></li>
+
+                    <li><a href="pageInterventionDetails.aspx?id=1">Intervention</a></li>--%>
+
+
+
+
+
+
+
+
+
+                    <%--<li><a href="pageClusterWG.aspx">Clu</a></li>  <%--POA Starting Link--%>
+                     <%--<li><a href="page1ClusterWG.aspx">Clu</a></li>--%>  <%--POA Starting Link--%>
+                    <%--<li><a href="poa_Interventions.aspx">POA</a></li>--%>
+
+
+                    <li class="dropdown" id="ClusterWG_1" runat="server" visible="false"><a  href="ClusterWG.aspx" class="dropdown-toggle" data-toggle="dropdown"
+                        role="button" aria-haspopup="true" aria-expanded="false">Other<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="page1ClusterWG.aspx">Cluster 1</a></li>
+                            <li><a href="designPlanningOverview2.aspx">Planning Overview</a></li>
+                            
+                            <li><a href="ClusterWG.aspx">Cluster Original</a></li>
+                            <li><a href="page1ClusterWG.aspx">Clu</a></li>
+
+                            <li><a href="pagePOADetail.aspx?id=701">POA - Details</a></li>
+                            <li><a href="pageAddPOA.aspx">POA - Add New</a></li>
+                            <li><a href="pageEditPOA.aspx?id=701">POA - Edit</a></li>
+
+                            <li><a href="pageInterventionsDirectDetail.aspx?id=801">Interv - Details</a></li>
+                            <li><a href="pageAddIntervention.aspx">Interv - Add New</a></li>
+                            <li><a href="pageEditIntervention.aspx?id=807">Interv - Edit/Del</a></li>
+
+                            <li><a href="pageAddIndicator.aspx?interventionId=807">Indicat - Add New</a></li>
+                            <li><a href="pageEditIndicator.aspx?id=912">Indicat - Edit/Del</a></li>
+
+                            <li><a href="pageAddBudget.aspx?interventionId=801">Budget - Add New</a></li>
+                            <li><a href="pageEditBudget.aspx?id=1201">Budget - Edit/Del</a></li>
+
+                            <%--<li><a href="designedMonitoringOverview_2.aspx">Monitoring</a></li>--%>
+                            <li><a href="designedMonitoringOverview.aspx">Monitoring</a></li>
+                            <li><a href="designedSubmitQuarterlyReport.aspx">Q Reports</a></li>
+
+                            <li><a href="approvalIntervention.aspx">Pending Approvals</a></li>
+
+                            <li><a href="designedAddSubOutcome.aspx">Add SubOutcome</a></li>
+                            <li><a href="addEditWorkingGroup.aspx">Add WG</a></li>
+                            <li><a href="addEditPriority.aspx">Add Priority</a></li>
+                            <li><a href="addEditLeadingInstitution.aspx">Add Institution</a></li>
+                            <%--<li><a href="addEditIntervention.aspx">Add Mix Intervention</a></li>--%>
+                            <%--<li><a href="addEditMunicipality.aspx">Add Municipality</a></li>--%>
+                            <%--<li><a href="addQuarterlyReport.aspx">Add Quarterly Report</a></li>--%>
+
+                            <li><a href="ReviewMonitoring.aspx">Review Monitoring</a></li>
+
+
+
+
+
+
+                           <%-- <li><a href="intervention_content.aspx">CMS</a></li>
+                            <li><a href="upload.aspx">Uploads</a></li>--%>
+                        </ul>
+                    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <li class="dropdown" id="ClusterA1_li" runat="server" visible="false"><a id="ClusterA1" runat="server" href="ClusterWG.aspx" class="dropdown-toggle" data-toggle="dropdown"
+                        role="button" aria-haspopup="true" aria-expanded="false">Admin<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="register.aspx">Register Users</a></li>
+                            <li><a href="intervention_content.aspx">CMS</a></li>
+                            <li><a href="upload.aspx">Uploads</a></li>
+                      </ul>
+                    </li>
+                    <li id="Reports_0" runat="server" visible="false"><a href="ReportSummary.aspx">Report</a></li>
+
+
+
+
+
+
+
+
+
+
+
+                    <%------------------------------------------------- Planning Unit Start ---------------------------------------%>
+
+
+
+
+                    <%--<li id="PlanningUnit_1_ADD" runat="server" visible="false"><a href="PlanningUnit_1.aspx">Planning Unit</a></li>--%>
+
+                    <li class="dropdown" id="DD_PlanningUnit" runat="server" visible="false"><a id="A2" runat="server" href="" class="dropdown-toggle" data-toggle="dropdown"
+                        role="button" aria-haspopup="true" aria-expanded="false">PU<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="register.aspx">Add New User</a></li>
+                            <li><a href="pu_ClusterSetup.aspx">Cluster</a></li>
+                            <li><a href="pu_ImplementationInstitutionsSetup.aspx">Dept/Institutions</a></li>
+                            <li><a href="pu_WGSetup.aspx">Working Group</a></li>
+                            <%--<li><a href="upload.aspx">Add PMTDP Priorities</a></li>--%>
+                            <li><a href="pu_UploadPMTDP.aspx">Upload PMTDP Priorities</a></li>
+                            <li><a href="upload.aspx">Indicators</a></li>
+                            <li><a href="upload.aspx">Upload PMTDP & POA </a></li>
+                           
+                        </ul>
+</li>
+
+
+
+                    <%------------------------------------------------- Planning Unit End ---------------------------------------%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   
+                    <li class="dropdown" id="Departments_0" runat="server" visible="false"><a id="A1" href="#" class="dropdown-toggle" data-toggle="dropdown"
+                        role="button" aria-haspopup="true" aria-expanded="false">Departments<span class="caret"></span></a>
+                        <ul class="dropdown-menu" data-dropdown-in="fadeInUp" data-dropdown-out="fadeOutDown">
+                            <li><a href="http://www.eccogta.gov.za/">CoGTa</a></li>
+                            <li><a href="http://www.dedea.gov.za">DEDEA</a></li>
+                            <li><a href="http://www.ecdoh.gov.za/">Health</a></li>
+                            <li><a href="http://www.ecdpw.gov.za/">Public Works</a></li>
+                            <li><a href="http://www.drdar.gov.za/">DRDAR</a></li>
+                            <li><a href="http://www.safety.ecprov.gov.za/">Safety</a></li>
+                            <li><a href="http://www.ecdsd.gov.za/Pages/home.aspx">Social Development</a></li>
+                            <li><a href="http://www.ecsrac.gov.za/Pages/default.aspx">Sports</a></li>
+                            <li><a href="http://www.ectransport.gov.za/">Transport</a></li>
+                            <li><a href="http://www.ecprov.gov.za/">OTP</a></li>
+                      </ul>
+                    </li>
+                    <li id="Calendar_0" runat="server" visible="false"><a id="cont" href="ProvincialCalendar.aspx">Calendar</a></li>
+                    <li><a id="cont2" href="login.aspx">Sign out</a></li>
+                   <%-- <li>
+                        <form class="navbar-form" role="search">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search this site">
+                            <span class="input-group-btn">
+                                <button type="submit" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+                        </div>
+                        </form>
+                    </li>--%>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <%--main Content--%>
+    <div class="container-fluid">
+        <asp:Panel ID="pnlWorkflow" runat="server" Visible="false">
+            <uc:WorkflowStatus runat="server" ID="workflowPanel" />
+        </asp:Panel>
+        <asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server">
+
+        </asp:ContentPlaceHolder>
+    </div>
+    <footer id="fh5co-footer" class="padding100">
+			
+			<div >
+				<div class="container">
+					<div class="row">
+						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.2s">
+							<h3 class="fh5co-lead">About</h3>
+							<ul>
+								<li><a href="#">OTP</a></li>
+								<li><a href="#">Contact Us</a></li>
+							</ul>
+						</div>
+						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.4s">
+							<h3 class="fh5co-lead">Support</h3>
+							<ul>
+								<li><a href="#">Terms of Service</a></li>
+								<li><a href="#">M and E Policy</a></li>
+								<li><a href="#">M and E Steering Committee</a></li>
+							</ul>
+						</div>
+						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.6s">
+							<h3 class="fh5co-lead">More Links</h3>
+							<ul>
+								<li><a href="#">Feedback</a></li>
+								<li><a href="#">Frequently Ask Questions</a></li>
+								<li><a href="#">Terms of Service</a></li>
+							</ul>
+						</div>
+
+						<div class="col-md-3 col-sm-12 col-md-pull-9 animated wow fadeInLeft" data-wow-delay="0.8s">
+							
+							<p class="fh5co-copyright"><small>&copy; 2021. All Rights Reserved. <br>	by Office of the Premier</small></p>
+							
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</footer>
+    <!-- jQuery -->
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="js/wow.min.js" type="text/javascript"></script>
+    <script src="js/tutorial.js" type="text/javascript"></script>
+    <script src="css/owl/owl.carousel.js" type="text/javascript"></script>
+    <!-- SmartMenus jQuery plugin -->
+    <script type="text/javascript" src="js/jquery.smartmenus.js"></script>
+    <!-- SmartMenus jQuery Bootstrap Addon -->
+    <script type="text/javascript" src="js/jquery.smartmenus.bootstrap.js"></script>
+    <script src="js/contact.js" type="text/javascript"></script>
+
+    
+    </form>
+</body>
+</html>

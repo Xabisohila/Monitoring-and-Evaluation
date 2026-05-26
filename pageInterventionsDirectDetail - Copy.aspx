@@ -1,0 +1,267 @@
+﻿<%--<%@ Page Title="" Language="C#" MasterPageFile="~/akshara.master" AutoEventWireup="true" CodeFile="pageInterventionsDirectDetail.aspx.cs" Inherits="pageInterventionsDirectDetail" %>
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit"  TagPrefix="AjaxControlToolkit" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+    <AjaxControlToolkit:ToolkitScriptManager runat="Server" ID="ScriptManager1" />
+
+    <title>Intervention Details</title>
+    <style type="text/css">
+        /* Basic inline CSS for readability. Consider moving this to an external.css file. */
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+     .container { max-width: 1200px; margin: auto; padding: 25px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1, h2, h3, h4, h5 { color: #0056b3; margin-top: 20px; margin-bottom: 10px; }
+     .section-header { border-bottom: 2px solid #0056b3; padding-bottom: 5px; margin-bottom: 15px; }
+     .data-label { font-weight: bold; color: #555; display: inline-block; width: 180px; }
+     .data-value { display: inline-block; margin-left: 10px; }
+     .section { margin-bottom: 30px; padding: 20px; background-color: #fcfcfc; border-radius: 6px; border: 1px solid #e0e0e0; }
+     .table-container { overflow-x: auto; margin-top: 15px; }
+     .data-grid { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+     .data-grid { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+     .data-grid th,.data-grid td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+     .data-grid th { background-color: #e9e9e9; font-weight: bold; color: #333; }
+     .data-grid tr:nth-child(even) { background-color: #f9f9f9; }
+     .message { color: #888; text-align: center; margin-top: 50px; font-size: 1.1em; }
+     .navigation-links { margin-top: 20px; text-align: center; }
+     .navigation-links a { margin: 0 10px; color: #007bff; text-decoration: none; font-weight: bold; }
+     .navigation-links a:hover { text-decoration: underline; }
+    </style>
+
+    <br /><br /><br /><br />
+
+    <div class="container">
+            <h1>Intervention: <asp:Label ID="lblInterventionName" runat="server"></asp:Label></h1>
+            <p><strong>Description:</strong> <asp:Label ID="lblDescription" runat="server"></asp:Label></p>
+            <p><strong>Lead Institution:</strong> <asp:Label ID="lblLeadInstitution" runat="server"></asp:Label></p>
+            <p><strong>Working Group:</strong> <asp:Label ID="lblWorkingGroup" runat="server"></asp:Label></p>
+            <p><strong>Primary Municipality:</strong> <asp:Label ID="lblMunicipality" runat="server"></asp:Label></p>
+            <p><strong>Spatial Reference:</strong> <asp:Label ID="lblSpatialReference" runat="server"></asp:Label></p>
+            <p><strong>Period:</strong> <asp:Label ID="lblInterventionPeriod" runat="server"></asp:Label></p>
+
+            <div class="section">
+                <h2>Strategic Alignment</h2>
+                <div><span class="data-label">Parent POA:</span> <span class="data-value"><asp:HyperLink ID="hlPOA" runat="server"></asp:HyperLink></span></div>
+                <div><span class="data-label">Parent Cluster:</span> <span class="data-value"><asp:HyperLink ID="hlCluster" runat="server"></asp:HyperLink></span></div>
+                <div><span class="data-label">PMTDP Priority:</span> <span class="data-value"><asp:HyperLink ID="hlPMTDP" runat="server"></asp:HyperLink></span></div>
+                <div><span class="data-label">Aligned PDP:</span> <span class="data-value"><asp:HyperLink ID="hlPDP" runat="server"></asp:HyperLink></span></div>
+            </div>
+
+            <div class="section">
+                <h2>Indicators & Targets</h2>
+                <div class="table-container">
+                    <asp:GridView ID="gvIndicators" runat="server" AutoGenerateColumns="False" CssClass="data-grid" EmptyDataText="No indicators found.">
+                        <Columns>
+                            <asp:BoundField DataField="IndicatorName" HeaderText="Indicator" />
+                            <asp:BoundField DataField="IndicatorType" HeaderText="Type" />
+                            <asp:BoundField DataField="UnitOfMeasure" HeaderText="Unit" />
+                            <asp:BoundField DataField="BaselineValue" HeaderText="Baseline" DataFormatString="{0:N2}" />
+                            <asp:BoundField DataField="BaselineYear" HeaderText="Year" />
+                            <asp:BoundField DataField="TargetValue" HeaderText="Target" DataFormatString="{0:N2}" />
+                            <asp:BoundField DataField="TargetYear" HeaderText="Target Year" />
+                            <asp:BoundField DataField="Target2030_TermTarget" HeaderText="2030 Term Target" />
+                        </Columns>
+                    </asp:GridView>
+                </div>F
+            </div>
+
+            <div class="section">
+                <h2>Budget Allocation</h2>
+                <div class="table-container">
+                    <asp:GridView ID="gvBudgets" runat="server" AutoGenerateColumns="False" CssClass="data-grid" EmptyDataText="No budget information.">
+                        <Columns>
+                            <asp:BoundField DataField="FinancialYear" HeaderText="FY" />
+                            <asp:BoundField DataField="AnnualBudget" HeaderText="Annual Budget" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="TermBudget" HeaderText="Term Budget" DataFormatString="{0:C}" />
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Quarterly Reports</h2>
+                <div class="table-container">
+                    <asp:GridView ID="gvQuarterlyReports" runat="server" AutoGenerateColumns="False" CssClass="data-grid" EmptyDataText="No quarterly reports.">
+                        <Columns>
+                            <asp:BoundField DataField="FinancialYear" HeaderText="FY" />
+                            <asp:BoundField DataField="Quarter" HeaderText="Quarter" />
+                            <asp:BoundField DataField="ActualExpenditure" HeaderText="Actual Spend" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="PlannedExpenditure" HeaderText="Planned Spend" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="BudgetDeviation" HeaderText="Deviation" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="ReportingDate" HeaderText="Report Date" DataFormatString="{0:d}" />
+                            <%-- Add a link to the report details if you create a QuarterlyReportDetail.aspx --%>
+                            <%-- <asp:HyperLinkField DataTextField="ReportingDate" DataNavigateUrlFields="ReportID" DataNavigateUrlFormatString="QuarterlyReportDetail.aspx?id={0}" HeaderText="View Report" Text="View" /> -- %>
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </div>
+
+            <div class="navigation-links">
+                <asp:HyperLink ID="hlBackToOverview" runat="server" Text="Back to Planning Overview"></asp:HyperLink>
+            </div>
+        </div>
+
+
+</asp:Content>--%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%@ Page Title="" Language="C#" MasterPageFile="~/akshara.master" AutoEventWireup="true" CodeFile="pageInterventionsDirectDetail - Copy.aspx.cs" Inherits="pageInterventionsDirectDetail" %>
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit"  TagPrefix="AjaxControlToolkit" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+    <AjaxControlToolkit:ToolkitScriptManager runat="Server" ID="ScriptManager1" />
+
+
+
+    
+
+
+
+    <title>Intervention Details</title>
+    <style type="text/css">
+        /* Basic inline CSS for readability. Consider moving this to an external.css file. */
+        /*body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }*/
+     /*.container { max-width: 1200px; margin: auto; padding: 25px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }        #0056b3*/
+        h1, h2, h3, h4, h5 { color: #000000; margin-top: 20px; margin-bottom: 10px; }
+     .section-header { border-bottom: 2px solid #0056b3; padding-bottom: 5px; margin-bottom: 15px; }
+     .data-label { font-weight: bold; color: #555; display: inline-block; width: 180px; }
+     .data-value { display: inline-block; margin-left: 10px; }
+     .section { margin-bottom: 30px; padding: 20px; background-color: #fcfcfc; border-radius: 6px; border: 1px solid #e0e0e0; }
+     .table-container { overflow-x: auto; margin-top: 15px; }
+     .data-grid { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+     .data-grid { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+     .data-grid th,.data-grid td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+     .data-grid th { background-color: #80BF64; font-weight: bold; color: #333; }
+     .data-grid tr:nth-child(even) { background-color: #f9f9f9; }
+     .message { color: #888; text-align: center; margin-top: 50px; font-size: 1.1em; }
+     .navigation-links { margin-top: 20px; text-align: center; }
+     .navigation-links a { margin: 0 10px; color: #007bff; text-decoration: none; font-weight: bold; }
+     .navigation-links a:hover { text-decoration: underline; }
+
+     .asp-button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin-right: 10px; }
+.asp-button:hover { background-color: #218838; }
+
+    </style>
+    <br /><br /><br /><br />
+
+
+
+
+
+
+
+
+
+
+
+            <div class="row section-title text-center">
+
+
+        <br />
+        <div class="row">
+            <h2 class="background double animated wow fadeInUp" data-wow-delay="0.2s"><span><strong>Intervention Details</strong></span></h2>
+
+        </div>
+
+    </div>
+    <div class="container">
+
+
+            <%--<h1>Intervention: <asp:Label ID="lblInterventionName" runat="server"></asp:Label></h1>--%>
+            <h3><strong><asp:Label ID="lblInterventionName" runat="server"></asp:Label></strong></h3>
+
+            <p><strong>Description:</strong> <asp:Label ID="lblDescription" runat="server"></asp:Label></p>
+            <p><strong>Lead Institution:</strong> <asp:Label ID="lblLeadInstitution" runat="server"></asp:Label></p>
+            <p><strong>Working Group:</strong> <asp:Label ID="lblWorkingGroup" runat="server"></asp:Label></p>
+            <p><strong>Primary Municipality:</strong> <asp:Label ID="lblMunicipality" runat="server"></asp:Label></p>
+            <p><strong>Spatial Reference:</strong> <asp:Label ID="lblSpatialReference" runat="server"></asp:Label></p>
+            <p><strong>Period:</strong> <asp:Label ID="lblInterventionPeriod" runat="server"></asp:Label></p>
+            <div class="section">
+                <h2>Strategic Alignment</h2>
+                <div><span class="data-label">Parent POA:</span> <span class="data-value"><asp:HyperLink ID="hlPOA" runat="server"></asp:HyperLink></span></div>
+                <div><span class="data-label">Parent Cluster:</span> <span class="data-value"><asp:HyperLink ID="hlCluster" runat="server"></asp:HyperLink></span></div>
+                <div><span class="data-label">PMTDP Priority:</span> <span class="data-value"><asp:HyperLink ID="hlPMTDP" runat="server"></asp:HyperLink></span></div>
+                <div><span class="data-label">Aligned PDP:</span> <span class="data-value"><asp:HyperLink ID="hlPDP" runat="server"></asp:HyperLink></span></div>
+            </div>
+            <div class="section">
+                <h2>Indicators & Targets</h2>
+                <div class="table-container">
+                    <asp:GridView ID="gvIndicators" runat="server" AutoGenerateColumns="False" CssClass="data-grid" EmptyDataText="No indicators found.">
+                        <Columns>
+                            <asp:BoundField DataField="IndicatorName" HeaderText="Indicator" />
+                            <asp:BoundField DataField="IndicatorType" HeaderText="Type" />
+                            <asp:BoundField DataField="UnitOfMeasure" HeaderText="Unit" />
+                            <asp:BoundField DataField="BaselineValue" HeaderText="Baseline" DataFormatString="{0:N2}" />
+                            <asp:BoundField DataField="BaselineYear" HeaderText="Year" />
+                            <asp:BoundField DataField="TargetValue" HeaderText="Target" DataFormatString="{0:N2}" />
+                            <asp:BoundField DataField="TargetYear" HeaderText="Target Year" />
+                            <asp:BoundField DataField="Target2030_TermTarget" HeaderText="2030 Term Target" />
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Budget Allocation</h2>
+                <div class="table-container">
+                    <asp:GridView ID="gvBudgets" runat="server" AutoGenerateColumns="False" CssClass="data-grid" EmptyDataText="No budget information.">
+                        <Columns>
+                            <asp:BoundField DataField="FinancialYear" HeaderText="FY" />
+                            <asp:BoundField DataField="AnnualBudget" HeaderText="Annual Budget" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="TermBudget" HeaderText="Term Budget" DataFormatString="{0:C}" />
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Quarterly Reports</h2>
+                <div class="table-container">
+                    <asp:GridView ID="gvQuarterlyReports" runat="server" AutoGenerateColumns="False" CssClass="data-grid" EmptyDataText="No quarterly reports.">
+                        <Columns>
+                            <asp:BoundField DataField="FinancialYear" HeaderText="FY" />
+                            <asp:BoundField DataField="Quarter" HeaderText="Quarter" />
+                            <asp:BoundField DataField="ActualExpenditure" HeaderText="Actual Spend" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="PlannedExpenditure" HeaderText="Planned Spend" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="BudgetDeviation" HeaderText="Deviation" DataFormatString="{0:C}" />
+                            <asp:BoundField DataField="ReportingDate" HeaderText="Report Date" DataFormatString="{0:d}" />
+                            <%-- Add a link to the report details if you create a QuarterlyReportDetail.aspx --%>
+                            <%-- <asp:HyperLinkField DataTextField="ReportingDate" DataNavigateUrlFields="ReportID" DataNavigateUrlFormatString="QuarterlyReportDetail.aspx?id={0}" HeaderText="View Report" Text="View" /> --%>
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </div>
+
+        <div>
+            <asp:Button ID="btnSubmit" runat="server" Text="Download PDF"  CssClass="asp-button" />
+        </div>
+
+
+
+
+            <div class="navigation-links">
+                <asp:HyperLink ID="hlBackToOverview" runat="server" Text="Back to Planning Overview"></asp:HyperLink>
+            </div>
+        </div>
+</asp:Content>
