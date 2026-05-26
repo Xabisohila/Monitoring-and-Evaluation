@@ -226,7 +226,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
         <div class="btn-row">
             <asp:Button ID="btnSubmit" runat="server" Text="Add Budget Entry"
                 OnClick="btnSubmit_Click" CssClass="btn-primary"
-                OnClientClick="return showConfirm('<%= btnSubmit.ClientID %>');" />
+                OnClientClick="return showConfirm('<%= btnSubmit.UniqueID %>');" />
             <asp:Button ID="btnCancel" runat="server" Text="Cancel"
                 OnClick="btnCancel_Click" CausesValidation="false" CssClass="btn-secondary" />
         </div>
@@ -271,17 +271,15 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
     </div>
 </div>
 <script type="text/javascript">
-    var _confirmed = false, _btnId = '';
-    function showConfirm(id) {
-        if (_confirmed) { _confirmed = false; return true; }
-        _btnId = id;
+    var _uniqueId = '';
+    function showConfirm(uniqueId) {
+        _uniqueId = uniqueId;
         document.getElementById('confirmModal').style.display = 'flex';
         return false;
     }
     function doConfirm() {
         document.getElementById('confirmModal').style.display = 'none';
-        _confirmed = true;
-        document.getElementById(_btnId).click();
+        __doPostBack(_uniqueId, '');
     }
     function cancelConfirm() {
         document.getElementById('confirmModal').style.display = 'none';

@@ -129,6 +129,10 @@ public partial class pageEditIntervention : System.Web.UI.Page
 
     protected void btnCancel_Click(object sender, EventArgs e)
     {
-        Response.Redirect(hlBackToOverview.NavigateUrl);
+        string id = hfInterventionID.Value;
+        if (!string.IsNullOrEmpty(id) && id != "0")
+            Response.Redirect("pageInterventionsDirectDetail.aspx?id=" + id);
+        else
+            Response.Redirect("pagePlanningOverview.aspx");
     }
 }
