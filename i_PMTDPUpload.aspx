@@ -210,7 +210,7 @@
                 <ItemTemplate>
                     <tr>
                         <td><%# Eval("UploadRequestID") %></td>
-                        <td><%# Eval("SubmittedDate") %></td>
+                        <td><%# Eval("SubmittedDate", "{0:dd MMM yyyy HH:mm}") %></td>
                         <td><%# (string)Eval("StatusBadge") %></td>
                         <td><%# Eval("ReviewComment") %></td>
                     </tr>
@@ -218,7 +218,7 @@
                 <AlternatingItemTemplate>
                     <tr style="background:#f8fafc;">
                         <td><%# Eval("UploadRequestID") %></td>
-                        <td><%# Eval("SubmittedDate") %></td>
+                        <td><%# Eval("SubmittedDate", "{0:dd MMM yyyy HH:mm}") %></td>
                         <td><%# (string)Eval("StatusBadge") %></td>
                         <td><%# Eval("ReviewComment") %></td>
                     </tr>

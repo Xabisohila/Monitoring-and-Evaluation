@@ -147,6 +147,9 @@ public partial class i_PMTDPUpload : Page
         btnSubmit.Visible = false;
         previewCard.Visible = false;
 
+        lblMsg.Text = "Your PMTDP data has been submitted for approval. A Planning Unit reviewer will assess your submission and you will be notified of the outcome.";
+        lblMsg.CssClass = "msg-bar visible";
+
         // Show the success modal client-side after the postback
         ScriptManager.RegisterStartupScript(this, GetType(), "showSubmitModal",
             "$('#modalSubmitSuccess').modal('show');", true);

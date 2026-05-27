@@ -135,6 +135,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
 .msg-success { background: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; }
 .msg-error   { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
 .msg-info    { background: #e0f2fe; border: 1px solid #7dd3fc; color: #075985; }
+.val-msg     { display: block; font-size: 12px; color: var(--danger); margin-top: 4px; }
 </style>
 </asp:Content>
 
@@ -180,16 +181,28 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
     <asp:Panel ID="pnlReview" runat="server">
         <div class="review-card">
             <h4>Decision</h4>
-            <p>Optionally add a comment before approving or rejecting.</p>
+            <p>A comment is required when rejecting. It is optional when approving.</p>
             <asp:TextBox ID="txtComment" runat="server"
                 TextMode="MultiLine" Rows="3"
-                placeholder="Add a comment or reason (optional)..." />
+                placeholder="Add a comment (required for rejection, optional for approval)..." />
+            <asp:RequiredFieldValidator ID="rfvComment" runat="server"
+                ControlToValidate="txtComment"
+                ValidationGroup="RejectGroup"
+                ErrorMessage="A comment is required when rejecting."
+                Display="Dynamic" CssClass="val-msg" />
+            <asp:RegularExpressionValidator ID="revComment" runat="server"
+                ControlToValidate="txtComment"
+                ValidationGroup="RejectGroup"
+                ValidationExpression="[\s\S]{10,}"
+                ErrorMessage="Comment must be at least 10 characters."
+                Display="Dynamic" CssClass="val-msg" />
             <div class="btn-row">
                 <asp:Button ID="btnApprove" runat="server"
                     Text="Approve" OnClick="btnApprove_Click"
                     CssClass="btn-approve" />
                 <asp:Button ID="btnReject" runat="server"
                     Text="Reject" OnClick="btnReject_Click"
+                    ValidationGroup="RejectGroup"
                     CssClass="btn-reject" />
             </div>
         </div>

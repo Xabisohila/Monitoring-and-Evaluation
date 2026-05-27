@@ -82,6 +82,12 @@ public partial class j_PMTDPApprovalView : Page
             return;
         }
 
+        if (string.IsNullOrWhiteSpace(txtComment.Text) || txtComment.Text.Trim().Length < 10)
+        {
+            lblMsg.Text = "A comment of at least 10 characters is required when rejecting.";
+            return;
+        }
+
         uploadDAL.ReviewUpload(UploadId, CurrentUserId, "Rejected", txtComment.Text);
 
         if (SubmitterUserId > 0)
