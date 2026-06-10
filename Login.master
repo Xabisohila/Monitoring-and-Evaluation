@@ -21,9 +21,11 @@
     <link href="css/1-col-portfolio.css" rel="stylesheet">
 
     <link href="fonts/font-awesome.min.css" rel="stylesheet" type="text/css" />
-
-
-    
+    <style>
+        .navbar-inverse.navbar-fixed-top { min-height: 58px; }
+        .navbar-inverse .navbar-header { height: 58px; }
+        .navbar-brand { padding-top: 5px; padding-bottom: 5px; height: 58px; }
+    </style>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -31,8 +33,13 @@
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
             <div class="navbar-header">
-               
-                <a  href="index.aspx"><i ></i><img class="logo" src="img/logo.png" alt="logo"></a>
+                <a href="login.aspx" class="navbar-brand" style="display:flex;align-items:center;padding-top:9px;padding-bottom:9px;">
+                    <img class="logo" src="img/logo.png" alt="logo" style="height:48px;vertical-align:middle;" />
+                    <span style="display:inline-block;margin-left:8px;vertical-align:middle;line-height:1.2;">
+                        <strong style="display:block;font-size:14px;font-weight:700;color:#fff;">Provincial M&amp;E</strong>
+                        <small style="display:block;font-size:10px;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.5px;">Office of the Premier</small>
+                    </span>
+                </a>
             </div>
             <div class="navbar-collapse collapse">
                 <!-- Left nav -->
@@ -47,45 +54,59 @@
         
         </asp:ContentPlaceHolder>
     </div>
-    <footer id="fh5co-footer" class="padding100">
-			
-			<div >
-				<div class="container">
-					<div class="row">
-						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.2s">
-							<h3 class="fh5co-lead">About</h3>
-							<ul>
-								<li><a href="#">OTP</a></li>
-								<li><a href="#">Contact Us</a></li>
-							</ul>
-						</div>
-						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.4s">
-							<h3 class="fh5co-lead">Support</h3>
-							<ul>
-								<li><a href="#">Terms of Service</a></li>
-								<li><a href="#">MnE Policy</a></li>
-								<li><a href="#">MnE Steering Committee</a></li>
-							</ul>
-						</div>
-						<div class="col-md-3 col-sm-4 col-md-push-3 animated wow fadeInLeft" data-wow-delay="0.6s">
-							<h3 class="fh5co-lead">More Links</h3>
-							<ul>
-								<li><a href="#">Feedback</a></li>
-								<li><a href="#">Frequently Ask Questions</a></li>
-								<li><a href="#">Terms of Service</a></li>
-							</ul>
-						</div>
+    <footer id="fh5co-footer" style="border-top: 3px solid #038C13; padding: 40px 0 0;">
+        <div class="container">
+            <div class="row" style="padding-bottom: 32px;">
 
-						<div class="col-md-3 col-sm-12 col-md-pull-9 animated wow fadeInLeft" data-wow-delay="0.8s">
-							
-							<p class="fh5co-copyright"><small>&copy; 2021. All Rights Reserved. <br>	by Office of the Premier</small></p>
-							
-						</div>
-						
-					</div>
-				</div>
-			</div>
-		</footer>
+                <div class="col-sm-4" style="margin-bottom: 24px;">
+                    <div style="margin-bottom: 14px;">
+                        <img src="img/OTPlogo.png" alt="OTP Logo" style="height: 52px;" />
+                    </div>
+                    <p style="font-size: 15px; font-weight: 600; color: #fff; margin: 0 0 6px;">Provincial M&amp;E System</p>
+                    <p style="font-size: 12px; color: #878c93; line-height: 1.6; margin: 0;">
+                        Monitoring &amp; Evaluation Planning Portal<br />
+                        Office of the Premier &mdash; EC
+                    </p>
+                </div>
+
+                <div class="col-sm-4" style="margin-bottom: 24px;">
+                    <h3 class="fh5co-lead">Support</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">M&amp;E Policy</a></li>
+                        <li><a href="#">M&amp;E Steering Committee</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-4" style="margin-bottom: 24px;">
+                    <h3 class="fh5co-lead">More Links</h3>
+                    <ul>
+                        <li><a href="#">Feedback</a></li>
+                        <li><a href="#">Frequently Asked Questions</a></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid #1a1a1a; padding: 14px 0;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="fh5co-copyright" style="margin: 0;">
+                            <small>&copy; 2026 Office of the Premier. All Rights Reserved.</small>
+                        </p>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <p class="fh5co-copyright" style="margin: 0;">
+                            <small>Provincial M&amp;E Planning System</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
     <!-- Bootstrap Core JavaScript -->
