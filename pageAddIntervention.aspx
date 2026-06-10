@@ -137,6 +137,43 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
     background: #e0ecff; color: #1e40af; font-size: 12px; font-weight: 700;
     letter-spacing: .3px; margin-left: 8px; vertical-align: middle;
 }
+
+/* ── PMTDP source toggle ───────────────────────────────────── */
+.source-toggle {
+    display: flex; border: 1.5px solid var(--border);
+    border-radius: 8px; overflow: hidden; width: fit-content;
+}
+.source-opt {
+    display: flex; align-items: center; gap: 7px;
+    padding: 8px 20px; font-size: 13px; font-weight: 600;
+    cursor: pointer; color: var(--muted); background: #f8fafc;
+    transition: background .12s, color .12s; user-select: none;
+}
+.source-opt:first-child { border-right: 1.5px solid var(--border); }
+.source-opt input[type=radio] { display: none; }
+.source-opt.active { background: var(--primary); color: #fff; }
+
+/* ── PMTDP picker ──────────────────────────────────────────── */
+.pmtdp-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 8px; padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; letter-spacing: .3px;
+    background: #dcfce7; color: #14532d;
+}
+.pmtdp-priority-label {
+    display: block; margin-top: 6px; font-size: 12px; color: var(--muted);
+}
+
+/* ── Non-PMTDP notice ──────────────────────────────────────── */
+.non-pmtdp-notice {
+    background: #fffbeb; border: 1px solid #fcd34d;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px; padding: 12px 16px;
+    font-size: 13px; color: #92400e; margin-bottom: 4px;
+}
+
+/* Read-only name field in PMTDP mode */
+.name-readonly { background: #f1f5f9 !important; color: var(--muted) !important; cursor: default !important; }
 </style>
 </asp:Content>
 
@@ -192,12 +229,51 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
         <div class="form-card">
             <div class="card-title">Intervention Details</div>
 
+            <%-- Source toggle --%>
             <div class="field">
-                <label for="<%= txtInterventionName.ClientID %>">Intervention Name</label>
-                <asp:TextBox ID="txtInterventionName" runat="server" />
+                <label>Source</label>
+                <div class="source-toggle">
+                    <label class="source-opt active" id="optPMTDP" onclick="setSource('pmtdp')">
+                        <input type="radio" name="sourceMode" value="pmtdp" checked />
+                        &#10003;&nbsp;From PMTDP Plan
+                    </label>
+                    <label class="source-opt" id="optOther" onclick="setSource('other')">
+                        <input type="radio" name="sourceMode" value="other" />
+                        + Non-PMTDP Activity
+                    </label>
+                </div>
+            </div>
+
+            <%-- PMTDP picker (visible in PMTDP mode) --%>
+            <div class="field" id="pmtdpPickerField">
+                <label>Select PMTDP Intervention <span style="color:var(--danger)">*</span></label>
+                <select id="ddlPmtdpPicker" onchange="onPmtdpPick(this)">
+                    <option value="">-- Select from approved PMTDP --</option>
+                </select>
+                <span id="pmtdpTag" class="pmtdp-tag" style="display:none">
+                    &#10003; PMTDP Aligned
+                </span>
+                <span id="pmtdpPriorityLabel" class="pmtdp-priority-label"></span>
+            </div>
+
+            <%-- Non-PMTDP notice (visible in Other mode) --%>
+            <div id="nonPmtdpNotice" class="non-pmtdp-notice" style="display:none">
+                &#9888; This intervention is not in the PMTDP plan. It will be flagged as a non-PMTDP activity.
+            </div>
+
+            <%-- Hidden: tracks which mode was active at submit --%>
+            <asp:HiddenField ID="hfIsPmtdp" runat="server" Value="1" />
+
+            <%-- Intervention Name --%>
+            <div class="field">
+                <label for="<%= txtInterventionName.ClientID %>">
+                    Intervention Name
+                    <span id="nameHint" style="font-weight:400;color:var(--muted);font-size:12px;margin-left:4px">(auto-filled from selection above)</span>
+                </label>
+                <asp:TextBox ID="txtInterventionName" runat="server" placeholder="Select a PMTDP intervention above..." />
                 <asp:RequiredFieldValidator ID="rfvInterventionName" runat="server"
                     ControlToValidate="txtInterventionName"
-                    ErrorMessage="Intervention Name is required."
+                    ErrorMessage="Intervention Name is required. Select a PMTDP intervention or switch to Non-PMTDP mode."
                     Display="Dynamic" CssClass="val-msg" />
             </div>
 
@@ -333,5 +409,115 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
     </asp:Panel>
 
 </div>
+
+<script>
+// pmtdpInterventions is injected by the server as a JSON array.
+// Each item: { name, priority, institution, spatial }
+var pmtdpInterventions = pmtdpInterventions || [];
+
+function buildPmtdpPicker() {
+    var sel = document.getElementById('ddlPmtdpPicker');
+    if (!sel) return;
+    while (sel.options.length > 1) sel.remove(1);
+
+    if (!pmtdpInterventions || pmtdpInterventions.length === 0) {
+        sel.options[0].text = '-- No approved PMTDP interventions for this cluster --';
+        return;
+    }
+    sel.options[0].text = '-- Select approved PMTDP intervention (' + pmtdpInterventions.length + ' available) --';
+
+    var lastPriority = '';
+    for (var i = 0; i < pmtdpInterventions.length; i++) {
+        var item = pmtdpInterventions[i];
+        var opt = document.createElement('option');
+        opt.value = i;
+        var label = item.name;
+        if (item.priority !== lastPriority) label = '[' + item.priority + ']  ' + label;
+        opt.text = label;
+        sel.appendChild(opt);
+        lastPriority = item.priority;
+    }
+}
+
+function onPmtdpPick(sel) {
+    var nameBox    = document.getElementById('<%= txtInterventionName.ClientID %>');
+    var spatialBox = document.getElementById('<%= txtSpatialReference.ClientID %>');
+    var tag        = document.getElementById('pmtdpTag');
+    var priLabel   = document.getElementById('pmtdpPriorityLabel');
+    var hf         = document.getElementById('<%= hfIsPmtdp.ClientID %>');
+
+    if (!sel.value) {
+        nameBox.value = '';
+        nameBox.readOnly = true;
+        nameBox.className = nameBox.className.replace(' name-readonly', '') + ' name-readonly';
+        tag.style.display = 'none';
+        priLabel.textContent = '';
+        hf.value = '1';
+        return;
+    }
+
+    var item = pmtdpInterventions[parseInt(sel.value)];
+    nameBox.value = item.name;
+    nameBox.readOnly = true;
+    if (nameBox.className.indexOf('name-readonly') < 0)
+        nameBox.className += ' name-readonly';
+
+    if (item.spatial && spatialBox && !spatialBox.value)
+        spatialBox.value = item.spatial;
+
+    tag.style.display = 'inline-flex';
+    priLabel.textContent = 'Priority: ' + item.priority
+        + (item.institution ? '  |  Lead: ' + item.institution : '');
+    hf.value = '1';
+}
+
+function setSource(mode) {
+    var optPMTDP       = document.getElementById('optPMTDP');
+    var optOther       = document.getElementById('optOther');
+    var pickerField    = document.getElementById('pmtdpPickerField');
+    var notice         = document.getElementById('nonPmtdpNotice');
+    var nameHint       = document.getElementById('nameHint');
+    var nameBox        = document.getElementById('<%= txtInterventionName.ClientID %>');
+    var tag            = document.getElementById('pmtdpTag');
+    var priLabel       = document.getElementById('pmtdpPriorityLabel');
+    var hf             = document.getElementById('<%= hfIsPmtdp.ClientID %>');
+
+    if (mode === 'pmtdp') {
+        optPMTDP.classList.add('active');    optOther.classList.remove('active');
+        pickerField.style.display = 'block'; notice.style.display = 'none';
+        nameHint.style.display = 'inline';
+        // Re-apply readonly state from picker selection
+        var sel = document.getElementById('ddlPmtdpPicker');
+        if (!sel.value) {
+            nameBox.value = '';
+            nameBox.readOnly = true;
+            if (nameBox.className.indexOf('name-readonly') < 0)
+                nameBox.className += ' name-readonly';
+        }
+        hf.value = '1';
+    } else {
+        optOther.classList.add('active');    optPMTDP.classList.remove('active');
+        pickerField.style.display = 'none'; notice.style.display = 'block';
+        nameHint.style.display = 'none';
+        nameBox.readOnly = false;
+        nameBox.className = nameBox.className.replace(' name-readonly', '');
+        nameBox.value = '';
+        nameBox.placeholder = 'Enter intervention name...';
+        tag.style.display = 'none';
+        priLabel.textContent = '';
+        document.getElementById('ddlPmtdpPicker').value = '';
+        hf.value = '0';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    buildPmtdpPicker();
+    // Start in PMTDP mode with name field locked until a selection is made
+    var nameBox = document.getElementById('<%= txtInterventionName.ClientID %>');
+    nameBox.readOnly = true;
+    if (nameBox.className.indexOf('name-readonly') < 0)
+        nameBox.className += ' name-readonly';
+});
+</script>
 
 </asp:Content>

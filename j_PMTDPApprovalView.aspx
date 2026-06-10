@@ -173,7 +173,14 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
             <asp:GridView ID="gvData" runat="server"
                 AutoGenerateColumns="true"
                 CssClass="rv-tbl"
-                GridLines="None" />
+                GridLines="None"
+                OnRowCreated="gvData_RowCreated">
+                <EmptyDataTemplate>
+                    <p style="padding:20px;color:#64748b;font-size:13px;">
+                        No data rows found for this upload request.
+                    </p>
+                </EmptyDataTemplate>
+            </asp:GridView>
         </div>
     </div>
 

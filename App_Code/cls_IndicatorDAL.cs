@@ -93,25 +93,57 @@ public class cls_IndicatorDAL
         string unitOfMeasure,
         decimal baselineValue,
         int baselineYear,
-        decimal? targetValue, // Nullable for optional target
-        int? targetYear,       // Nullable for optional target
-        string target2030TermTarget) // Nullable for optional target
+        decimal? targetValue,
+        int? targetYear,
+        string target2030TermTarget,
+        bool isCumulative = false,
+        bool isPercentage  = false)
     {
         SqlParameter[] parameters = new SqlParameter[]
         {
-            new SqlParameter("@InterventionID", interventionId),
-            new SqlParameter("@IndicatorName", indicatorName),
-            new SqlParameter("@IndicatorType", indicatorType),
-            new SqlParameter("@UnitOfMeasure", (object)unitOfMeasure?? DBNull.Value),
-            new SqlParameter("@BaselineValue", baselineValue),
-            new SqlParameter("@BaselineYear", baselineYear),
-            new SqlParameter("@TargetValue", (object)targetValue?? DBNull.Value),
-            new SqlParameter("@TargetYear", (object)targetYear?? DBNull.Value),
-            new SqlParameter("@Target2030_TermTarget", (object)target2030TermTarget?? DBNull.Value)
+            new SqlParameter("@InterventionID",         interventionId),
+            new SqlParameter("@IndicatorName",          indicatorName),
+            new SqlParameter("@IndicatorType",          indicatorType),
+            new SqlParameter("@UnitOfMeasure",          (object)unitOfMeasure          ?? DBNull.Value),
+            new SqlParameter("@BaselineValue",          baselineValue),
+            new SqlParameter("@BaselineYear",           baselineYear),
+            new SqlParameter("@TargetValue",            (object)targetValue            ?? DBNull.Value),
+            new SqlParameter("@TargetYear",             (object)targetYear             ?? DBNull.Value),
+            new SqlParameter("@Target2030_TermTarget",  (object)target2030TermTarget   ?? DBNull.Value),
+            new SqlParameter("@IsCumulative",           isCumulative ? 1 : 0),
+            new SqlParameter("@IsPercentage",           isPercentage  ? 1 : 0),
         };
 
         object result = ExecuteScalar("new_SP_CreateInterventionIndicator", parameters);
         return (result != null && result != DBNull.Value) ? Convert.ToInt32(result) : 0;
+    }
+
+    // Returns the PMTDP indicator details paired with a PMTDP-sourced intervention.
+    // Returns null when the intervention is not PMTDP-sourced or has no indicator in the plan.
+    public DataRow GetPMTDPIndicatorForIntervention(int interventionId)
+    {
+        const string sql = @"
+            SELECT TOP 1
+                u.InterventionIndicator AS IndicatorName,
+                ISNULL(u.IndicatorType,     '')    AS IndicatorType,
+                ISNULL(u.Baseline2023_24,   '')    AS Baseline2023_24,
+                ISNULL(u.TermTarget2030,    '')    AS TermTarget2030,
+                ISNULL(u.IsCumulative,       0)    AS IsCumulative,
+                ISNULL(u.IsPercentage,       0)    AS IsPercentage
+            FROM dbo.new_Interventions        n
+            INNER JOIN dbo.i_PMTDP_UploadData u
+                ON u.InterventionName = n.InterventionName
+            INNER JOIN dbo.i_PMTDP_UploadRequest r
+                ON r.UploadRequestID = u.UploadRequestID
+            WHERE n.InterventionID      = @InterventionID
+              AND n.PMTDP_Source        = 1
+              AND r.Status              = 'Approved'
+              AND u.InterventionIndicator IS NOT NULL
+            ORDER BY r.ReviewedDate DESC";
+
+        DataTable dt = ExecuteDataTable(sql,
+            new SqlParameter("@InterventionID", interventionId));
+        return dt.Rows.Count > 0 ? dt.Rows[0] : null;
     }
 
     // --- Lookup Methods for Dropdowns ---

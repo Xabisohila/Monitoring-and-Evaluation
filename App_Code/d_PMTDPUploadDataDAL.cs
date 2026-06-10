@@ -78,18 +78,21 @@ namespace MnE2.DAL
 
         public DataTable GetUploadData(int uploadId)
         {
-            using (SqlConnection con = Database.GetConnection())
-            using (SqlCommand cmd = new SqlCommand("n_sp_PMTDP_GetUploadData", con))
-            {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@UploadRequestID", uploadId);
+            // Direct query — bypasses SP version dependency and works regardless of
+            // whether Phase1 schema update has been run against this DB instance.
+            const string sql =
+                "SELECT * FROM dbo.i_PMTDP_UploadData " +
+                "WHERE UploadRequestID = @id " +
+                "ORDER BY UploadDataID";
 
+            using (SqlConnection con = Database.GetConnection())
+            using (SqlCommand cmd = new SqlCommand(sql, con))
+            {
+                cmd.Parameters.AddWithValue("@id", uploadId);
+                DataTable dt = new DataTable();
                 using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                {
-                    DataTable dt = new DataTable();
                     da.Fill(dt);
-                    return dt;
-                }
+                return dt;
             }
         }
     }

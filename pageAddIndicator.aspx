@@ -78,6 +78,36 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
 
+/* ── Checkboxes ────────────────────────────────────────────── */
+.check-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.check-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+.check-row label { margin: 0; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; }
+.check-row .check-hint { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── PMTDP source banner ────────────────────────────────────── */
+.pmtdp-banner {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: #eff6ff; border: 1px solid #bfdbfe;
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius); padding: 14px 18px;
+    margin-bottom: 24px;
+}
+.pmtdp-banner .pmtdp-icon {
+    flex-shrink: 0; width: 36px; height: 36px; background: #dbeafe;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--primary);
+}
+.pmtdp-banner .pmtdp-body { flex: 1; }
+.pmtdp-banner .pmtdp-body strong { font-size: 13px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 3px; }
+.pmtdp-banner .pmtdp-body p { margin: 0; font-size: 12px; color: #1e40af; }
+
+/* locked (readOnly) field style */
+.field input[readonly], .field textarea[readonly] {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    cursor: not-allowed;
+}
+
 /* ── Validation messages ───────────────────────────────────── */
 .val-msg {
     display: block; font-size: 12px; color: var(--danger);
@@ -135,7 +165,8 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 <AjaxControlToolkit:ToolkitScriptManager runat="Server" ID="ScriptManager1" />
 
-<asp:HiddenField ID="hfPoaId" runat="server" />
+<asp:HiddenField ID="hfPoaId"   runat="server" />
+<asp:HiddenField ID="hfIsPmtdp" runat="server" Value="0" />
 
 <div class="container" style="padding-bottom:60px; max-width:820px;">
 
@@ -147,6 +178,17 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
         <h2>Add Indicator</h2>
         <p>Complete the form below to add an indicator to the selected Intervention.</p>
     </div>
+
+    <%-- PMTDP source banner (visible only when intervention is PMTDP-sourced) --%>
+    <asp:Panel ID="pnlPmtdpSource" runat="server" Visible="false">
+        <div class="pmtdp-banner">
+            <div class="pmtdp-icon">&#9733;</div>
+            <div class="pmtdp-body">
+                <strong>PMTDP-Aligned Indicator</strong>
+                <p>This indicator has been pre-filled from the approved PMTDP plan linked to the selected intervention. The indicator name is locked to maintain traceability.</p>
+            </div>
+        </div>
+    </asp:Panel>
 
     <%-- Validation summary --%>
     <asp:ValidationSummary ID="ValidationSummary1" runat="server"
@@ -199,6 +241,18 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
                     </label>
                     <asp:TextBox ID="txtUnitOfMeasure" runat="server"
                         placeholder="e.g. %, number, rand" />
+                </div>
+            </div>
+
+            <%-- Cumulative / Percentage flags --%>
+            <div style="margin-top:4px;">
+                <div class="check-row">
+                    <asp:CheckBox ID="cbIsCumulative" runat="server" />
+                    <label for="<%= cbIsCumulative.ClientID %>">Cumulative indicator</label>
+                </div>
+                <div class="check-row">
+                    <asp:CheckBox ID="cbIsPercentage" runat="server" />
+                    <label for="<%= cbIsPercentage.ClientID %>">Percentage indicator</label>
                 </div>
             </div>
         </div>
@@ -317,5 +371,50 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
     </asp:Panel>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof pmtdpIndicator === 'undefined' || pmtdpIndicator === null) return;
+
+    var ind = pmtdpIndicator;
+
+    // Pre-fill indicator name and lock it
+    var txtName = document.getElementById('<%= txtIndicatorName.ClientID %>');
+    if (txtName && ind.name) {
+        txtName.value = ind.name;
+        txtName.readOnly = true;
+    }
+
+    // Pre-select indicator type
+    var ddlType = document.getElementById('<%= ddlIndicatorType.ClientID %>');
+    if (ddlType && ind.type) {
+        for (var i = 0; i < ddlType.options.length; i++) {
+            if (ddlType.options[i].value === ind.type ||
+                ddlType.options[i].text  === ind.type) {
+                ddlType.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    // Pre-fill baseline
+    var txtBaseline = document.getElementById('<%= txtBaselineValue.ClientID %>');
+    if (txtBaseline && ind.baseline) txtBaseline.value = ind.baseline;
+
+    var txtBaselineYear = document.getElementById('<%= txtBaselineYear.ClientID %>');
+    if (txtBaselineYear && ind.baselineYear) txtBaselineYear.value = ind.baselineYear;
+
+    // Pre-fill 2030 term target
+    var txtTermTgt = document.getElementById('<%= txtTarget2030TermTarget.ClientID %>');
+    if (txtTermTgt && ind.termTarget) txtTermTgt.value = ind.termTarget;
+
+    // Set cumulative / percentage checkboxes
+    var cbCumulative = document.getElementById('<%= cbIsCumulative.ClientID %>');
+    if (cbCumulative) cbCumulative.checked = !!ind.isCumulative;
+
+    var cbPercentage = document.getElementById('<%= cbIsPercentage.ClientID %>');
+    if (cbPercentage) cbPercentage.checked = !!ind.isPercentage;
+});
+</script>
 
 </asp:Content>

@@ -76,21 +76,23 @@ public class InterventionDAL
         int interventionStartYear,
         int interventionEndYear,
         int? municipalityId,
-        string spatialReference, int subOutcomeId)
+        string spatialReference,
+        int subOutcomeId,
+        bool isPmtdpSource = false)
     {
         SqlParameter[] parameters = new SqlParameter[]
         {
-            new SqlParameter("@InterventionName", interventionName),
+            new SqlParameter("@InterventionName",        interventionName),
             new SqlParameter("@InterventionDescription", (object)interventionDescription ?? DBNull.Value),
-            new SqlParameter("@POA_ID", poaId),
-            new SqlParameter("@LeadInstitutionID", leadInstitutionId),
-            new SqlParameter("@WorkingGroupID", (object)workingGroupId ?? DBNull.Value),
-            new SqlParameter("@InterventionStartYear", interventionStartYear),
-            new SqlParameter("@InterventionEndYear", interventionEndYear),
-            new SqlParameter("@MunicipalityID", (object)municipalityId ?? DBNull.Value),
-            new SqlParameter("@SpatialReference", (object)spatialReference ?? DBNull.Value),
-
-            new SqlParameter("@SubOutcomeID", subOutcomeId)
+            new SqlParameter("@POA_ID",                  poaId),
+            new SqlParameter("@LeadInstitutionID",       leadInstitutionId),
+            new SqlParameter("@WorkingGroupID",          (object)workingGroupId ?? DBNull.Value),
+            new SqlParameter("@InterventionStartYear",   interventionStartYear),
+            new SqlParameter("@InterventionEndYear",     interventionEndYear),
+            new SqlParameter("@MunicipalityID",          (object)municipalityId ?? DBNull.Value),
+            new SqlParameter("@SpatialReference",        (object)spatialReference ?? DBNull.Value),
+            new SqlParameter("@SubOutcomeID",            subOutcomeId),
+            new SqlParameter("@PMTDP_Source",            isPmtdpSource ? 1 : 0),
         };
 
         object result = ExecuteScalar("new_SP_CreateIntervention", parameters);
@@ -258,6 +260,28 @@ public class InterventionDAL
     {
         const string sql = "SELECT * FROM new_Interventions WHERE IsApproved = 1 AND ApprovalDate >= DATEADD(MONTH, -1, GETDATE())";
         return ExecuteDataTable(sql, CommandType.Text);
+    }
+
+    // Returns distinct interventions from approved PMTDP uploads for a given cluster.
+    // Used to populate the PMTDP source picker on pageAddIntervention.aspx.
+    public DataTable GetPMTDPInterventionsByCluster(int clusterId)
+    {
+        const string sql = @"
+            SELECT DISTINCT
+                u.InterventionName,
+                u.PriorityName,
+                ISNULL(u.ImplementingInstitution, '') AS ImplementingInstitution,
+                ISNULL(u.SpatialReference,         '') AS SpatialReference
+            FROM dbo.i_PMTDP_UploadData        u
+            INNER JOIN dbo.i_PMTDP_UploadRequest r ON r.UploadRequestID = u.UploadRequestID
+            INNER JOIN dbo.new_PMTDP_Priorities  p ON p.PriorityName    = u.PriorityName
+            WHERE  r.Status           = 'Approved'
+              AND  u.InterventionName IS NOT NULL
+              AND  p.ClusterID        = @ClusterID
+            ORDER BY u.PriorityName, u.InterventionName";
+
+        return ExecuteDataTable(sql, CommandType.Text,
+            new SqlParameter("@ClusterID", clusterId));
     }
 
 

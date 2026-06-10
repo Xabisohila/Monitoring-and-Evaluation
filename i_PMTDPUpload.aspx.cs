@@ -158,9 +158,11 @@ public partial class i_PMTDPUpload : Page
     private DataTable ReadExcel(string path)
     {
         string ext = Path.GetExtension(path).ToLowerInvariant();
+        // HDR=NO lets us see all rows — we find the real header row ourselves.
+        // This handles templates that have an instruction/banner row before the headers.
         string props = ext == ".xlsx"
-            ? "Excel 12.0 Xml;HDR=YES;IMEX=1"
-            : "Excel 8.0;HDR=YES;IMEX=1";
+            ? "Excel 12.0 Xml;HDR=NO;IMEX=1"
+            : "Excel 8.0;HDR=NO;IMEX=1";
 
         string conn = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path
                     + ";Extended Properties='" + props + "'";
@@ -168,11 +170,68 @@ public partial class i_PMTDPUpload : Page
         using (OleDbConnection cn = new OleDbConnection(conn))
         using (OleDbDataAdapter da = new OleDbDataAdapter("SELECT * FROM [PMTDP$]", cn))
         {
-            DataTable dt = new DataTable();
-            da.Fill(dt);
+            DataTable raw = new DataTable();
+            da.Fill(raw);
+
+            int headerRowIdx = FindHeaderRow(raw);
+            DataTable dt = BuildFromHeaderRow(raw, headerRowIdx);
             NormalizeColumns(dt);
             return dt;
         }
+    }
+
+    // Scans the first 5 rows to find the one with the most cells matching
+    // known column names. Handles instruction/banner rows before the real header.
+    private int FindHeaderRow(DataTable raw)
+    {
+        int bestRow = 0, bestScore = 0;
+        for (int r = 0; r < Math.Min(5, raw.Rows.Count); r++)
+        {
+            int score = 0;
+            foreach (DataColumn col in raw.Columns)
+            {
+                string v = (raw.Rows[r][col] ?? "").ToString().Trim();
+                if (_colMap.ContainsKey(v)) score++;
+            }
+            if (score > bestScore) { bestScore = score; bestRow = r; }
+        }
+        return bestRow;
+    }
+
+    // Builds a typed DataTable using the given row as column names,
+    // then adds all subsequent non-empty rows as data.
+    private static DataTable BuildFromHeaderRow(DataTable raw, int headerRowIdx)
+    {
+        DataTable dt = new DataTable();
+        DataRow hdr = raw.Rows[headerRowIdx];
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        for (int c = 0; c < raw.Columns.Count; c++)
+        {
+            string name = (hdr[c] ?? "").ToString().Trim();
+            if (string.IsNullOrEmpty(name)) name = "Col_" + c;
+            if (!seen.Add(name)) name = name + "_" + c;
+            dt.Columns.Add(name, typeof(string));
+        }
+
+        for (int r = headerRowIdx + 1; r < raw.Rows.Count; r++)
+        {
+            DataRow src = raw.Rows[r];
+            bool anyValue = false;
+            foreach (var cell in src.ItemArray)
+                if (cell != null && !(cell is DBNull) && !string.IsNullOrWhiteSpace(cell.ToString()))
+                { anyValue = true; break; }
+            if (!anyValue) continue;
+
+            object[] vals = new object[dt.Columns.Count];
+            for (int c = 0; c < vals.Length; c++)
+                vals[c] = (src[c] == null || src[c] is DBNull)
+                    ? (object)DBNull.Value
+                    : src[c].ToString().Trim();
+            dt.Rows.Add(vals);
+        }
+
+        return dt;
     }
 
     // Maps common Excel header variations to the canonical names expected by
@@ -201,11 +260,8 @@ public partial class i_PMTDPUpload : Page
         { "PDP Target 2030",           "TermTargetValue" },
         { "Term Target",               "TermTargetValue" },
         { "Term Target Value",         "TermTargetValue" },
-        { "Annual Budget",             "AnnualBudget" },
         { "Implementing Institution",  "ImplementingInstitution" },
         { "Implementing Institutions", "ImplementingInstitution" },
-        { "Supporting Institutions",   "SupportingInstitutions" },
-        { "Supporting Institution",    "SupportingInstitutions" },
         { "Is Cumulative",             "IsCumulative" },
         { "Cumulative",                "IsCumulative" },
         { "Is Percentage",             "IsPercentage" },
@@ -218,9 +274,6 @@ public partial class i_PMTDPUpload : Page
         { "2030 Term Target",          "TermTarget2030" },
         { "Term Target 2030",          "TermTarget2030" },
         { "Term Budget",               "TermBudget" },
-        { "Annual Target",             "AnnualTarget" },
-        { "Annual Target 2025/26",     "AnnualTarget" },
-        { "2025/26 Target",            "AnnualTarget" },
         { "Spatial Reference",         "SpatialReference" },
         { "Spatial Referencing",       "SpatialReference" },
     };
@@ -236,9 +289,7 @@ public partial class i_PMTDPUpload : Page
         { "IndicatorType",           "Indicator Type" },
         { "BaselineValue",           "Baseline Value" },
         { "TermTargetValue",         "Term Target Value" },
-        { "AnnualBudget",            "Annual Budget" },
         { "ImplementingInstitution", "Implementing Institution" },
-        { "SupportingInstitutions",  "Supporting Institutions" },
         { "IsCumulative",            "Is Cumulative" },
         { "IsPercentage",            "Is Percentage" },
         { "InterventionName",        "Intervention Name" },
@@ -246,7 +297,6 @@ public partial class i_PMTDPUpload : Page
         { "Baseline2023_24",         "Baseline 2023/24" },
         { "TermTarget2030",          "Term Target 2030" },
         { "TermBudget",              "Term Budget" },
-        { "AnnualTarget",            "Annual Target 2025/26" },
         { "SpatialReference",        "Spatial Reference" },
     };
 

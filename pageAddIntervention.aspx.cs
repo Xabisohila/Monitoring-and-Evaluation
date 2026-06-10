@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -14,7 +15,6 @@ public partial class pageAddIntervention : System.Web.UI.Page
         {
             PopulateDropdowns();
 
-            // Pre-select cluster and filter dependent dropdowns
             string qsCluster = Request.QueryString["clusterId"];
             int preClusterId = 0;
             if (!string.IsNullOrEmpty(qsCluster))
@@ -27,7 +27,6 @@ public partial class pageAddIntervention : System.Web.UI.Page
                 PopulateDependentDropdowns(preClusterId);
             }
 
-            // Pre-select POA
             string qsPOA = Request.QueryString["poaId"];
             if (!string.IsNullOrEmpty(qsPOA))
             {
@@ -46,7 +45,15 @@ public partial class pageAddIntervention : System.Web.UI.Page
                 backUrl = Request.UrlReferrer.ToString();
             hlBackToOverview.NavigateUrl = backUrl;
         }
+
+        // Always inject PMTDP picker data based on the currently selected cluster.
+        // Runs on initial load AND on cluster-change postbacks.
+        int clusterId = 0;
+        int.TryParse(ddlCluster.SelectedValue, out clusterId);
+        RegisterPMTDPJson(clusterId);
     }
+
+    // ── Dropdowns ────────────────────────────────────────────────────────────
 
     private void PopulateDropdowns()
     {
@@ -140,6 +147,47 @@ public partial class pageAddIntervention : System.Web.UI.Page
         ddlSubOutcome.Items.Insert(0, new ListItem("-- Select SubOutcome --", "0"));
     }
 
+    // ── PMTDP picker JSON ────────────────────────────────────────────────────
+
+    private void RegisterPMTDPJson(int clusterId)
+    {
+        var sb = new StringBuilder("var pmtdpInterventions=");
+        if (clusterId > 0)
+        {
+            DataTable dt = dal.GetPMTDPInterventionsByCluster(clusterId);
+            sb.Append("[");
+            bool first = true;
+            foreach (DataRow r in dt.Rows)
+            {
+                if (!first) sb.Append(",");
+                sb.AppendFormat("{{\"name\":{0},\"priority\":{1},\"institution\":{2},\"spatial\":{3}}}",
+                    J(r["InterventionName"].ToString()),
+                    J(r["PriorityName"].ToString()),
+                    J(r["ImplementingInstitution"].ToString()),
+                    J(r["SpatialReference"].ToString()));
+                first = false;
+            }
+            sb.Append("]");
+        }
+        else
+        {
+            sb.Append("[]");
+        }
+        sb.Append(";");
+        ClientScript.RegisterStartupScript(GetType(), "pmtdpData", sb.ToString(), true);
+    }
+
+    private static string J(string s)
+    {
+        return "\"" + (s ?? "")
+            .Replace("\\", "\\\\")
+            .Replace("\"", "\\\"")
+            .Replace("\r", "")
+            .Replace("\n", "\\n") + "\"";
+    }
+
+    // ── Save ─────────────────────────────────────────────────────────────────
+
     protected void btnSubmit_Click(object sender, EventArgs e)
     {
         if (!Page.IsValid) return;
@@ -162,9 +210,12 @@ public partial class pageAddIntervention : System.Web.UI.Page
         string finalDescription = string.IsNullOrEmpty(interventionDescription) ? null : interventionDescription;
         string finalSpatialRef  = string.IsNullOrEmpty(txtSpatialReference.Text.Trim()) ? null : txtSpatialReference.Text.Trim();
 
+        bool isPmtdp = hfIsPmtdp.Value == "1";
+
         int newInterventionId = dal.CreateIntervention(
             interventionName, finalDescription, poaId, leadInstitutionId,
-            workingGroupId, startYear, endYear, municipalityId, finalSpatialRef, subOutcomeId);
+            workingGroupId, startYear, endYear, municipalityId, finalSpatialRef,
+            subOutcomeId, isPmtdp);
 
         if (newInterventionId > 0)
         {
