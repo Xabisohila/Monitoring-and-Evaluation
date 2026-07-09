@@ -1,8 +1,8 @@
 ﻿using MnE2.DAL;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.OleDb;
 using System.IO;
 using System.Web.UI;
 
@@ -158,20 +158,46 @@ public partial class i_PMTDPUpload : Page
     private DataTable ReadExcel(string path)
     {
         string ext = Path.GetExtension(path).ToLowerInvariant();
-        // HDR=NO lets us see all rows — we find the real header row ourselves.
-        // This handles templates that have an instruction/banner row before the headers.
-        string props = ext == ".xlsx"
-            ? "Excel 12.0 Xml;HDR=NO;IMEX=1"
-            : "Excel 8.0;HDR=NO;IMEX=1";
+        if (ext == ".xls")
+            throw new InvalidOperationException(
+                "The old .xls format is not supported. Please open the file in Excel, " +
+                "save it as .xlsx (Excel Workbook), and upload again.");
 
-        string conn = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path
-                    + ";Extended Properties='" + props + "'";
+        ExcelPackage.License.SetNonCommercialPersonal("MnE Planning System");
 
-        using (OleDbConnection cn = new OleDbConnection(conn))
-        using (OleDbDataAdapter da = new OleDbDataAdapter("SELECT * FROM [PMTDP$]", cn))
+        using (var package = new ExcelPackage(new FileInfo(path)))
         {
+            // Find sheet named PMTDP (case-insensitive); fall back to first sheet
+            ExcelWorksheet sheet = null;
+            foreach (var ws in package.Workbook.Worksheets)
+            {
+                if (ws.Name.Equals("PMTDP", StringComparison.OrdinalIgnoreCase))
+                { sheet = ws; break; }
+            }
+            if (sheet == null)
+                sheet = package.Workbook.Worksheets[0];
+
+            if (sheet.Dimension == null)
+                return new DataTable(); // empty sheet
+
+            int rowCount = sheet.Dimension.Rows;
+            int colCount = sheet.Dimension.Columns;
+
+            // Build a raw all-string DataTable — same shape FindHeaderRow expects
             DataTable raw = new DataTable();
-            da.Fill(raw);
+            for (int c = 0; c < colCount; c++)
+                raw.Columns.Add("Col" + c, typeof(string));
+
+            for (int r = 1; r <= rowCount; r++)
+            {
+                object[] vals = new object[colCount];
+                for (int c = 1; c <= colCount; c++)
+                {
+                    object v = sheet.Cells[r, c].Value;
+                    vals[c - 1] = (v == null) ? (object)DBNull.Value : v.ToString().Trim();
+                }
+                raw.Rows.Add(vals);
+            }
 
             int headerRowIdx = FindHeaderRow(raw);
             DataTable dt = BuildFromHeaderRow(raw, headerRowIdx);
