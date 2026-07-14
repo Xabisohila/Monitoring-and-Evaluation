@@ -185,6 +185,33 @@ public class clsUser
         }
     }
 
+    public DataTable GetAllUsers()
+    {
+        using (var sqlConn = new SqlConnection(conn))
+        using (var cmd = new SqlCommand("sp_GetAllUsers", sqlConn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            var da = new SqlDataAdapter(cmd);
+            var dt = new DataTable();
+            da.Fill(dt);
+            return dt;
+        }
+    }
+
+    public void UpdateUserAccess(int userId, int userType, int activation)
+    {
+        using (var sqlConn = new SqlConnection(conn))
+        using (var cmd = new SqlCommand("sp_UpdateUserAccess", sqlConn))
+        {
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@UserID", userId);
+            cmd.Parameters.AddWithValue("@UserType", userType);
+            cmd.Parameters.AddWithValue("@Activation", activation);
+            sqlConn.Open();
+            cmd.ExecuteNonQuery();
+        }
+    }
+
     public DataSet LoginDetails(int postPersalNumber)
     {
         try

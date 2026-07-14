@@ -10,24 +10,25 @@ public partial class register : System.Web.UI.Page
     clsUser oUser = new clsUser();
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (Session["Fullname"] != null)
-        {
-            if (!Page.IsPostBack)
-            {
-                populateDistrictMunicipality();
-                populateDepartment();
-                populateTitle();
-                populateActive();
-                populateUserType();
-            }
-            else
-            {
-
-            }
-        }
-        else
+        if (Session["UserType"] == null)
         {
             Response.Redirect("login.aspx");
+            return;
+        }
+
+        if (Convert.ToInt32(Session["UserType"]) != 32)
+        {
+            Response.Redirect("Index.aspx");
+            return;
+        }
+
+        if (!Page.IsPostBack)
+        {
+            populateDistrictMunicipality();
+            populateDepartment();
+            populateTitle();
+            populateActive();
+            populateUserType();
         }
         
     }
@@ -93,8 +94,7 @@ public partial class register : System.Web.UI.Page
         oUser.UserType = Convert.ToInt16(ddlUserType.SelectedValue);
         oUser.Activation = Convert.ToInt16(ddlActivation.SelectedValue);
         oUser.RegisterUser();
-        ScriptManager.RegisterClientScriptBlock(Page, typeof(Page), "ClientScript", "alert('Registration Successful!')", true);
-        Clear();
+        Response.Redirect("pageUserAdmin.aspx?added=1");
     }
 
     public void Clear()
