@@ -35,6 +35,7 @@ public partial class i_PMTDPUpload : Page
         var display = new DataTable();
         display.Columns.Add("UploadRequestID");
         display.Columns.Add("SubmittedDate");
+        display.Columns.Add("Status");
         display.Columns.Add("StatusBadge");
         display.Columns.Add("ReviewComment");
 
@@ -64,7 +65,7 @@ public partial class i_PMTDPUpload : Page
             string comment = commentCol != null && r[commentCol] != DBNull.Value
                              ? r[commentCol].ToString() : "";
 
-            display.Rows.Add(r["UploadRequestID"].ToString(), date, badge, comment);
+            display.Rows.Add(r["UploadRequestID"].ToString(), date, status, badge, comment);
         }
 
         rptHistory.DataSource = display;

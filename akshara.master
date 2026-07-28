@@ -90,7 +90,7 @@
                 <a href="home.aspx" class="navbar-brand">
                     <img id="imgLogo1" runat="server" class="logo" src="img/logo.png" alt="logo" style="height:48px;" />
                     <span class="navbar-brand-text">
-                        <strong>Provincial M&amp;E</strong>
+                      
                         <small>Office of the Premier</small>
                     </span>
                 </a>
@@ -123,6 +123,7 @@
                             <li><a href="pageAddPOA.aspx">Create POA</a></li>
                             <li><a href="i_POAList.aspx">POA List</a></li>
                             <li><a href="i_POAUpload.aspx">POA Upload</a></li>
+                            <li><a href="j_POAUploadApprovalList.aspx">POA Upload - Approvals</a></li>
                             <li><a href="pageAddIntervention.aspx">Add Intervention</a></li>
                             <li><a href="i_QuarterlyTargets.aspx">Quarterly Targets</a></li>
                             <li><a href="ii_AssignIndicatorOwners.aspx">Assign Indicator Owners</a></li>
@@ -158,6 +159,7 @@
                             <li class="dropdown-header">Upload</li>
                             <li><a href="i_PMTDPUpload.aspx">PMTDP Upload</a></li>
                             <li><a href="i_POAUpload.aspx">POA Upload</a></li>
+                            <li><a href="j_POAUploadApprovalList.aspx">POA Upload - Approvals</a></li>
                             <li role="separator" class="divider"></li>
                             <li class="dropdown-header">Reference Data</li>
                             <li><a href="i_PriorityAdmin.aspx">Priority Focus</a></li>
@@ -193,8 +195,10 @@
                         <a id="A6" runat="server" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Upload <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="i_PMTDPUpload.aspx">PMTDP Upload</a></li>
-                            <li><a href="j_PMTDPApprovalList.aspx">Approval List</a></li>
-                            <li><a href="j_PMTDPApprovalView.aspx">Approval View</a></li>
+                            <li><a href="j_PMTDPApprovalList.aspx">PMTDP Approvals</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="i_POAUpload.aspx">POA Upload</a></li>
+                            <li><a href="j_POAUploadApprovalList.aspx">POA Upload - Approvals</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="i_PMTDPPriorityList.aspx">Assign Clusters</a></li>
                             <li><a href="pageAddPOA.aspx">Create POA</a></li>

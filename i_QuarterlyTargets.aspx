@@ -147,7 +147,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
 
-<div class="container" style="padding-bottom: 60px; max-width: 900px;">
+<div class="container" style="padding-top: 80px; padding-bottom: 60px; max-width: 900px;">
 
     <%-- Page header --%>
     <div class="ai-header">

@@ -137,11 +137,11 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
             </div>
             <div class="field">
                 <label for="<%= txtFirstname.ClientID %>">First Name <span class="req">*</span></label>
-                <asp:TextBox ID="txtFirstname" runat="server" placeholder="e.g. Liyo"></asp:TextBox>
+                <asp:TextBox ID="txtFirstname" runat="server" placeholder="e.g. Liyo de Liyo"></asp:TextBox>
             </div>
             <div class="field">
                 <label for="<%= txtLastname.ClientID %>">Last Name <span class="req">*</span></label>
-                <asp:TextBox ID="txtLastname" runat="server" placeholder="e.g. Hila"></asp:TextBox>
+                <asp:TextBox ID="txtLastname" runat="server" placeholder="e.g. Jonasi"></asp:TextBox>
             </div>
         </div>
 

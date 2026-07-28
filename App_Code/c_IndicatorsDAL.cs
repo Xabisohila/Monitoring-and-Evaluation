@@ -159,7 +159,7 @@ namespace MnE2.DAL
                 IndicatorID = Convert.ToInt32(dr["IndicatorID"]),
                 IndicatorName = dr["IndicatorName"].ToString(),
                 IndicatorType = dr["IndicatorType"].ToString(),
-                OutcomeID = Convert.ToInt32(dr["OutcomeID"]),
+                OutcomeID = dr["OutcomeID"] == DBNull.Value ? 0 : Convert.ToInt32(dr["OutcomeID"]),
                 BaselineValue = dr["BaselineValue"] == DBNull.Value ? null : dr["BaselineValue"].ToString(),
                 TermTargetValue = dr["TermTargetValue"] == DBNull.Value ? null : dr["TermTargetValue"].ToString(),
                 AnnualBudget = dr["AnnualBudget"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["AnnualBudget"]),

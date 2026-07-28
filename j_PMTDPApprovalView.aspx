@@ -140,7 +140,7 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-<div class="container">
+<div class="container" style="padding-top:80px; padding-bottom:60px;">
 
     <%-- Page header --%>
     <div class="rv-header">
@@ -161,6 +161,42 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
                    A second Planning Unit user must review it.</p>
             </div>
         </div>
+    </asp:Panel>
+
+    <%-- Submission metadata --%>
+    <asp:Panel ID="pnlMeta" runat="server" Visible="false">
+    <div class="data-card" style="margin-bottom:20px;">
+        <div class="data-card-header">
+            <h4>Submission Details</h4>
+            <asp:Label ID="lblStatus" runat="server" />
+        </div>
+        <div style="padding:18px 24px; display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px;">
+            <div>
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:4px;">Submitted By</div>
+                <div style="font-size:14px;font-weight:600;color:#1a2b4a;"><asp:Literal ID="litSubmitter" runat="server" /></div>
+            </div>
+            <div>
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:4px;">Submitted Date</div>
+                <div style="font-size:14px;font-weight:600;color:#1a2b4a;"><asp:Literal ID="litUploadDate" runat="server" /></div>
+            </div>
+            <div>
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:4px;">Approved By</div>
+                <div style="font-size:14px;font-weight:600;color:#1a2b4a;"><asp:Literal ID="litReviewer" runat="server" /></div>
+            </div>
+            <div>
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:4px;">File Name</div>
+                <div style="font-size:13px;color:#475569;word-break:break-all;"><asp:Literal ID="litFileName" runat="server" /></div>
+            </div>
+        </div>
+        <asp:Panel ID="pnlReviewNote" runat="server" Visible="false">
+        <div style="padding:0 24px 18px;">
+            <div style="background:#f1f5f9;border-radius:8px;padding:12px 16px;">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748b;margin-bottom:4px;">Reviewer Comment</div>
+                <div style="font-size:13px;color:#334155;"><asp:Literal ID="litReviewComment" runat="server" /></div>
+            </div>
+        </div>
+        </asp:Panel>
+    </div>
     </asp:Panel>
 
     <%-- Data preview card --%>

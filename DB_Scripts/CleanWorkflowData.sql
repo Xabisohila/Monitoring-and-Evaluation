@@ -58,7 +58,14 @@ IF OBJECT_ID('dbo.new_PMTDP_Priorities',       'U') IS NOT NULL DELETE FROM dbo.
 IF OBJECT_ID('dbo.i_IntegrationProgrammes',    'U') IS NOT NULL DELETE FROM dbo.i_IntegrationProgrammes;
 IF OBJECT_ID('dbo.i_Priorities',               'U') IS NOT NULL DELETE FROM dbo.i_Priorities;
 
--- Upload staging + header (try all known naming patterns)
+-- POA upload staging
+IF OBJECT_ID('dbo.i_POA_UploadData',            'U') IS NOT NULL DELETE FROM dbo.i_POA_UploadData;
+IF OBJECT_ID('dbo.i_POA_UploadRequest',         'U') IS NOT NULL DELETE FROM dbo.i_POA_UploadRequest;
+
+-- Intervention budgets
+IF OBJECT_ID('dbo.new_Intervention_Budgets',    'U') IS NOT NULL DELETE FROM dbo.new_Intervention_Budgets;
+
+-- PMTDP upload staging + header (try all known naming patterns)
 IF OBJECT_ID('dbo.i_PMTDP_UploadData',         'U') IS NOT NULL DELETE FROM dbo.i_PMTDP_UploadData;
 IF OBJECT_ID('dbo.n_PMTDPUploadRequests',       'U') IS NOT NULL DELETE FROM dbo.n_PMTDPUploadRequests;
 IF OBJECT_ID('dbo.i_PMTDPUploadRequests',       'U') IS NOT NULL DELETE FROM dbo.i_PMTDPUploadRequests;
@@ -96,6 +103,9 @@ IF OBJECT_ID('dbo.i_Outcomes',                  'U') IS NOT NULL DBCC CHECKIDENT
 IF OBJECT_ID('dbo.new_PMTDP_Priorities',        'U') IS NOT NULL DBCC CHECKIDENT('dbo.new_PMTDP_Priorities',        RESEED, 0) WITH NO_INFOMSGS;
 IF OBJECT_ID('dbo.i_IntegrationProgrammes',     'U') IS NOT NULL DBCC CHECKIDENT('dbo.i_IntegrationProgrammes',     RESEED, 0) WITH NO_INFOMSGS;
 IF OBJECT_ID('dbo.i_Priorities',                'U') IS NOT NULL DBCC CHECKIDENT('dbo.i_Priorities',                RESEED, 0) WITH NO_INFOMSGS;
+IF OBJECT_ID('dbo.i_POA_UploadData',             'U') IS NOT NULL DBCC CHECKIDENT('dbo.i_POA_UploadData',             RESEED, 0) WITH NO_INFOMSGS;
+IF OBJECT_ID('dbo.i_POA_UploadRequest',         'U') IS NOT NULL DBCC CHECKIDENT('dbo.i_POA_UploadRequest',         RESEED, 0) WITH NO_INFOMSGS;
+IF OBJECT_ID('dbo.new_Intervention_Budgets',    'U') IS NOT NULL DBCC CHECKIDENT('dbo.new_Intervention_Budgets',    RESEED, 0) WITH NO_INFOMSGS;
 IF OBJECT_ID('dbo.i_PMTDP_UploadData',          'U') IS NOT NULL DBCC CHECKIDENT('dbo.i_PMTDP_UploadData',          RESEED, 0) WITH NO_INFOMSGS;
 
 -- ── Step 5: Verify — all counts must be 0 ─────────────────────
@@ -113,7 +123,10 @@ SELECT 'i_Outcomes',                                COUNT(*)         FROM dbo.i_
 SELECT 'new_PMTDP_Priorities',                      COUNT(*)         FROM dbo.new_PMTDP_Priorities           UNION ALL
 SELECT 'i_IntegrationProgrammes',                   COUNT(*)         FROM dbo.i_IntegrationProgrammes        UNION ALL
 SELECT 'i_Priorities',                              COUNT(*)         FROM dbo.i_Priorities                   UNION ALL
-SELECT 'i_PMTDP_UploadData',                        COUNT(*)         FROM dbo.i_PMTDP_UploadData;
+SELECT 'i_PMTDP_UploadData',                        COUNT(*)         FROM dbo.i_PMTDP_UploadData             UNION ALL
+SELECT 'i_POA_UploadData',                          COUNT(*)         FROM dbo.i_POA_UploadData               UNION ALL
+SELECT 'i_POA_UploadRequest',                       COUNT(*)         FROM dbo.i_POA_UploadRequest             UNION ALL
+SELECT 'new_Intervention_Budgets',                  COUNT(*)         FROM dbo.new_Intervention_Budgets;
 
 -- ── If every row above shows 0 → COMMIT. Otherwise → ROLLBACK ─
 -- ROLLBACK TRANSACTION;

@@ -169,7 +169,7 @@
     <div id="wfPanel">
         <div class="wf-panel-head">
             <strong>&#9654; Planning Workflow</strong>
-            <button class="wf-panel-close" onclick="wfClose()" title="Close">&#215;</button>
+            <button type="button" class="wf-panel-close" onclick="wfClose()" title="Close">&#215;</button>
         </div>
 
         <asp:Literal runat="server" ID="litNextCard" />
@@ -181,7 +181,7 @@
     </div>
 
     <!-- Toggle pill -->
-    <button id="wfToggleBtn" onclick="wfToggle()" title="Planning workflow status">
+    <button type="button" id="wfToggleBtn" onclick="wfToggle()" title="Planning workflow status">
         <span id="wfStatusDot" class="wf-dot active"></span>
         <span id="wfStatusLabel">Workflow</span>
     </button>

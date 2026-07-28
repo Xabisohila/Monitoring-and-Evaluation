@@ -2,6 +2,7 @@ using MnE2.DAL;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -79,7 +80,40 @@ public partial class j_PMTDPApprovalView : Page
         {
             UploadHeader header = uploadDAL.GetUploadHeader(UploadId);
             if (header != null)
+            {
                 SubmitterUserId = header.UploadedByUserID;
+
+                // Populate metadata card
+                litSubmitter.Text  = Server.HtmlEncode(header.SubmitterName);
+                litUploadDate.Text = header.UploadDate != DateTime.MinValue
+                    ? header.UploadDate.ToString("dd MMM yyyy HH:mm") : "—";
+                litReviewer.Text   = !string.IsNullOrEmpty(header.ReviewerName)
+                    ? Server.HtmlEncode(header.ReviewerName) : "—";
+                string rawName = Path.GetFileName(header.FilePath);
+                // Strip the leading ticks prefix added on save (e.g. "639208333267843517_")
+                int sep = rawName.IndexOf('_');
+                long dummy;
+                string displayName = (sep > 0 && long.TryParse(rawName.Substring(0, sep), out dummy))
+                    ? rawName.Substring(sep + 1)
+                    : rawName;
+                litFileName.Text = Server.HtmlEncode(displayName);
+
+                string statusColor = header.Status == "Approved" ? "#065f46"
+                                   : header.Status == "Rejected" ? "#991b1b" : "#92400e";
+                string statusBg    = header.Status == "Approved" ? "#d1fae5"
+                                   : header.Status == "Rejected" ? "#fee2e2" : "#fef3c7";
+                lblStatus.Text = string.Format(
+                    "<span style='display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700;background:{0};color:{1};'>{2}</span>",
+                    statusBg, statusColor, Server.HtmlEncode(header.Status));
+
+                if (!string.IsNullOrEmpty(header.ReviewComment))
+                {
+                    litReviewComment.Text = Server.HtmlEncode(header.ReviewComment);
+                    pnlReviewNote.Visible = true;
+                }
+
+                pnlMeta.Visible = true;
+            }
 
             DataTable dt = uploadDataDAL.GetUploadData(UploadId);
 
@@ -109,8 +143,17 @@ public partial class j_PMTDPApprovalView : Page
                         "Columns available: " + colNames, "info");
             }
 
-            if (SubmitterUserId == CurrentUserId && SubmitterUserId != 0)
+            string status = header != null ? header.Status : "Pending";
+            bool isPending = status == "Pending";
+
+            if (!isPending)
             {
+                // Already decided — hide the review form for everyone
+                pnlReview.Visible = false;
+            }
+            else if (SubmitterUserId == CurrentUserId && SubmitterUserId != 0)
+            {
+                // Submitter viewing their own pending upload
                 pnlOwnerBanner.Visible = true;
                 pnlReview.Visible      = false;
             }

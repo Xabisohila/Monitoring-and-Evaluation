@@ -1,0 +1,156 @@
+﻿
+/* InterventionApproval.css */
+
+/* Container styling */
+.container {
+    max-width: 100%;
+    margin: auto;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: auto;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5 {
+    color: #03AC13;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* Section header */
+.section-header {
+    border-bottom: 2px solid #03AC13;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+/* Data labels and values */
+.data-label {
+    font-weight: bold;
+    color: #555;
+    display: inline-block;
+    width: 200px;
+}
+
+.data-value {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+/* Section box */
+.section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fcfcfc;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Table container */
+.table-container {
+    overflow-x: auto;
+    margin-top: 15px;
+}
+
+/* Data grid styling */
+.data-grid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+    .data-grid th, .data-grid td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .data-grid th {
+        background-color: #e9e9e9;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .data-grid tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+/* Nested grid styling */
+.nested-grid {
+    margin-top: 10px;
+    border: 1px solid #b2e5c2;
+    background-color: #e6ffe6;
+}
+
+    .nested-grid th {
+        background-color: #b3f0b3 !important;
+    }
+
+/* Message styling */
+.message {
+    color: #888;
+    text-align: center;
+    margin-top: 50px;
+    font-size: 1.1em;
+}
+
+/* Filter panel styling */
+.filter-panel {
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #f0fff0;
+    border: 1px solid #a3e6a3;
+    border-radius: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+    .filter-panel label {
+        margin-right: 5px;
+        font-weight: bold;
+        color: #03AC13;
+    }
+
+/* Dropdown styling */
+.asp-dropdown {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    min-width: 200px;
+}
+
+/* Button styling */
+.asp-button {
+    padding: 10px 20px;
+    background-color: #03AC13;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+    .asp-button:hover {
+        background-color: #028a10;
+    }
+
+/* Action links */
+.action-links {
+    margin-top: 10px;
+    text-align: right;
+}
+
+    .action-links a {
+        margin-left: 15px;
+        color: #03AC13;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+        .action-links a:hover {
+            text-decoration: underline;
+        }

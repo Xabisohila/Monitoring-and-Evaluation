@@ -1,6 +1,13 @@
 -- ============================================================
 -- Workflow Status SP
--- Returns one row with completion counts for all 8 planning stages.
+-- Returns one row with completion counts for all 7 planning stages:
+--   1. Upload PMTDP
+--   2. Approve PMTDP
+--   3. Assign Clusters
+--   4. Upload POA
+--   5. Approve POA
+--   6. Set Quarterly Targets
+--   7. Assign Indicator Owners
 -- Uses OBJECT_ID guards so it runs safely even if some tables
 -- have not been created yet.
 -- Run once against MnE_Copy_2
@@ -17,13 +24,13 @@ BEGIN
         @UploadCount        INT = 0,
         @TotalPriorities    INT = 0,
         @AssignedPriorities INT = 0,
+        @POAUploadCount     INT = 0,
+        @ApprovedPOACount   INT = 0,
         @POACount           INT = 0,
-        @InterventionCount  INT = 0,
-        @IndicatorCount     INT = 0,
         @QTargetCount       INT = 0,
         @OwnerCount         INT = 0;
 
-    -- Stage 1: any rows in upload staging = a file was uploaded
+    -- Stage 1: PMTDP file uploaded
     IF OBJECT_ID('dbo.i_PMTDP_UploadData', 'U') IS NOT NULL
         SET @UploadCount = (SELECT COUNT(DISTINCT UploadRequestID) FROM dbo.i_PMTDP_UploadData);
 
@@ -38,23 +45,22 @@ BEGIN
                                     WHERE ISNULL(ClusterID, 0) > 0);
     END
 
-    -- Stage 4: POAs
+    -- Stage 4: POA uploaded
+    IF OBJECT_ID('dbo.i_POA_UploadRequest', 'U') IS NOT NULL
+    BEGIN
+        SET @POAUploadCount   = (SELECT COUNT(*) FROM dbo.i_POA_UploadRequest);
+        SET @ApprovedPOACount = (SELECT COUNT(*) FROM dbo.i_POA_UploadRequest WHERE Status = 'Approved');
+    END
+
+    -- Stage 5: POA approved (live records created)
     IF OBJECT_ID('dbo.new_ProgrammesOfAction', 'U') IS NOT NULL
         SET @POACount = (SELECT COUNT(*) FROM dbo.new_ProgrammesOfAction);
 
-    -- Stage 5: Interventions
-    IF OBJECT_ID('dbo.new_Interventions', 'U') IS NOT NULL
-        SET @InterventionCount = (SELECT COUNT(*) FROM dbo.new_Interventions);
-
-    -- Stage 6: Indicators
-    IF OBJECT_ID('dbo.new_Intervention_Indicators', 'U') IS NOT NULL
-        SET @IndicatorCount = (SELECT COUNT(*) FROM dbo.new_Intervention_Indicators);
-
-    -- Stage 7: Quarterly targets (via annual targets join)
+    -- Stage 6: Quarterly targets
     IF OBJECT_ID('dbo.i_QuarterlyTargets', 'U') IS NOT NULL
         SET @QTargetCount = (SELECT COUNT(*) FROM dbo.i_QuarterlyTargets);
 
-    -- Stage 8: Indicator owners
+    -- Stage 7: Indicator owners
     IF OBJECT_ID('dbo.i_IndicatorOwners', 'U') IS NOT NULL
         SET @OwnerCount = (SELECT COUNT(*) FROM dbo.i_IndicatorOwners);
 
@@ -62,9 +68,9 @@ BEGIN
         @UploadCount        AS UploadCount,
         @TotalPriorities    AS TotalPriorities,
         @AssignedPriorities AS AssignedPriorities,
+        @POAUploadCount     AS POAUploadCount,
+        @ApprovedPOACount   AS ApprovedPOACount,
         @POACount           AS POACount,
-        @InterventionCount  AS InterventionCount,
-        @IndicatorCount     AS IndicatorCount,
         @QTargetCount       AS QTargetCount,
         @OwnerCount         AS OwnerCount;
 END

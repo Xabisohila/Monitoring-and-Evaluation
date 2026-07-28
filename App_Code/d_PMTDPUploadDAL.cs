@@ -57,9 +57,15 @@ namespace MnE2.DAL
 
                     return new UploadHeader
                     {
-                        UploadRequestID = uploadId,
+                        UploadRequestID  = uploadId,
                         UploadedByUserID = Convert.ToInt32(dr["UploadedByUserID"]),
-                        Status = dr["Status"].ToString()
+                        SubmitterName    = dr["SubmitterName"].ToString(),
+                        UploadDate       = dr["UploadDate"] != DBNull.Value ? Convert.ToDateTime(dr["UploadDate"]) : DateTime.MinValue,
+                        FilePath         = dr["FilePath"] != DBNull.Value ? dr["FilePath"].ToString() : "",
+                        Status           = dr["Status"].ToString(),
+                        ReviewerName     = dr["ReviewerName"].ToString(),
+                        ReviewComment    = dr["ReviewComment"] != DBNull.Value ? dr["ReviewComment"].ToString() : "",
+                        ReviewedDate     = dr["ReviewedDate"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(dr["ReviewedDate"]) : null
                     };
                 }
             }
@@ -104,8 +110,14 @@ namespace MnE2.DAL
 
     public class UploadHeader
     {
-        public int UploadRequestID { get; set; }
-        public int UploadedByUserID { get; set; }
-        public string Status { get; set; }
+        public int       UploadRequestID  { get; set; }
+        public int       UploadedByUserID { get; set; }
+        public string    SubmitterName    { get; set; }
+        public DateTime  UploadDate       { get; set; }
+        public string    FilePath         { get; set; }
+        public string    Status           { get; set; }
+        public string    ReviewerName     { get; set; }
+        public string    ReviewComment    { get; set; }
+        public DateTime? ReviewedDate     { get; set; }
     }
 }

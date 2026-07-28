@@ -133,6 +133,13 @@
     .badge-approved { background: #d1fae5; color: #065f46; }
     .badge-rejected { background: #fee2e2; color: #991b1b; }
     .history-empty  { padding: 24px; text-align: center; color: #94a3b8; font-size: 13px; }
+    .btn-view-pmtdp {
+        display: inline-block; padding: 4px 12px; border-radius: 6px;
+        font-size: 11px; font-weight: 700; white-space: nowrap;
+        background: #1d6f42; color: #fff; text-decoration: none;
+        transition: opacity .15s;
+    }
+    .btn-view-pmtdp:hover { opacity: .85; color: #fff; text-decoration: none; }
 </style>
 </asp:Content>
 
@@ -197,6 +204,7 @@
             <div class="history-empty">You have not submitted any PMTDP uploads yet.</div>
         </asp:Panel>
         <asp:Panel ID="pnlHistoryGrid" runat="server" Visible="false">
+        <div class="table-scroll" id="historyTableWrap">
             <asp:Repeater ID="rptHistory" runat="server">
                 <HeaderTemplate>
                     <table class="history-tbl">
@@ -205,6 +213,7 @@
                         <th>Submitted</th>
                         <th>Status</th>
                         <th>Reviewer Comment</th>
+                        <th></th>
                     </tr>
                 </HeaderTemplate>
                 <ItemTemplate>
@@ -213,6 +222,9 @@
                         <td><%# Eval("SubmittedDate", "{0:dd MMM yyyy HH:mm}") %></td>
                         <td><%# (string)Eval("StatusBadge") %></td>
                         <td><%# Eval("ReviewComment") %></td>
+                        <td><%# Eval("Status").ToString() == "Approved"
+                            ? string.Format("<a href='j_PMTDPApprovalView.aspx?id={0}' class='btn-view-pmtdp'>View PMTDP &rarr;</a>", Eval("UploadRequestID"))
+                            : "" %></td>
                     </tr>
                 </ItemTemplate>
                 <AlternatingItemTemplate>
@@ -221,12 +233,32 @@
                         <td><%# Eval("SubmittedDate", "{0:dd MMM yyyy HH:mm}") %></td>
                         <td><%# (string)Eval("StatusBadge") %></td>
                         <td><%# Eval("ReviewComment") %></td>
+                        <td><%# Eval("Status").ToString() == "Approved"
+                            ? string.Format("<a href='j_PMTDPApprovalView.aspx?id={0}' class='btn-view-pmtdp'>View PMTDP &rarr;</a>", Eval("UploadRequestID"))
+                            : "" %></td>
                     </tr>
                 </AlternatingItemTemplate>
                 <FooterTemplate>
                     </table>
                 </FooterTemplate>
             </asp:Repeater>
+        </div>
+        <div id="historyPager" style="display:none; padding:12px 20px; border-top:1px solid #edf2f7;
+             display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span id="historyPageInfo" style="font-size:12px; color:#64748b;"></span>
+            <div style="display:flex; gap:6px;">
+                <button type="button" id="historyPrev" onclick="historyPage(-1)"
+                    style="padding:5px 14px; font-size:12px; font-weight:600; border-radius:6px;
+                           border:1px solid #dce3ec; background:#fff; color:#1a2b4a; cursor:pointer;">
+                    &lsaquo; Prev
+                </button>
+                <button type="button" id="historyNext" onclick="historyPage(1)"
+                    style="padding:5px 14px; font-size:12px; font-weight:600; border-radius:6px;
+                           border:1px solid #dce3ec; background:#fff; color:#1a2b4a; cursor:pointer;">
+                    Next &rsaquo;
+                </button>
+            </div>
+        </div>
         </asp:Panel>
     </div>
 
@@ -287,6 +319,57 @@
 </div>
 
 <script type="text/javascript">
+// ── History table pagination ───────────────────────────────
+(function () {
+    var PAGE_SIZE = 10;
+    var currentPage = 1;
+
+    function initHistoryPager() {
+        var tbl = document.querySelector('#historyTableWrap .history-tbl');
+        if (!tbl) return;
+
+        var rows = tbl.querySelectorAll('tbody tr');
+        if (!rows.length) {
+            // repeater renders without tbody in some cases — grab all non-header trs
+            rows = [];
+            tbl.querySelectorAll('tr').forEach(function(r) {
+                if (!r.querySelector('th')) rows.push(r);
+            });
+        }
+        if (rows.length <= PAGE_SIZE) return; // no pager needed
+
+        var totalPages = Math.ceil(rows.length / PAGE_SIZE);
+
+        function render() {
+            var start = (currentPage - 1) * PAGE_SIZE;
+            rows.forEach(function(r, i) {
+                r.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none';
+            });
+            document.getElementById('historyPageInfo').textContent =
+                'Page ' + currentPage + ' of ' + totalPages +
+                '  (' + rows.length + ' total)';
+            document.getElementById('historyPrev').disabled = currentPage === 1;
+            document.getElementById('historyNext').disabled = currentPage === totalPages;
+            document.getElementById('historyPrev').style.opacity = currentPage === 1 ? '0.4' : '1';
+            document.getElementById('historyNext').style.opacity = currentPage === totalPages ? '0.4' : '1';
+        }
+
+        document.getElementById('historyPager').style.display = 'flex';
+        render();
+
+        window.historyPage = function(dir) {
+            currentPage = Math.min(totalPages, Math.max(1, currentPage + dir));
+            render();
+        };
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHistoryPager);
+    } else {
+        initHistoryPager();
+    }
+}());
+
 (function () {
     // Show message label with correct style
     var lbl = document.getElementById('<%= lblMsg.ClientID %>');
