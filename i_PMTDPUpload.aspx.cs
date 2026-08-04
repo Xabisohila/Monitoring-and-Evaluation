@@ -1,10 +1,13 @@
-﻿using MnE2.DAL;
+using MnE2.DAL;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Text;
+using System.Web;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 
 public partial class i_PMTDPUpload : Page
 {
@@ -28,71 +31,51 @@ public partial class i_PMTDPUpload : Page
         if (raw == null || raw.Rows.Count == 0)
         {
             pnlHistoryEmpty.Visible = true;
+            pnlHistoryGrid.Visible  = false;
             return;
         }
 
-        // Build a clean display table regardless of which columns exist in the raw result
         var display = new DataTable();
         display.Columns.Add("UploadRequestID");
         display.Columns.Add("SubmittedDate");
         display.Columns.Add("Status");
-        display.Columns.Add("StatusBadge");
         display.Columns.Add("ReviewComment");
 
-        bool hasDate    = raw.Columns.Contains("UploadDate")     || raw.Columns.Contains("CreatedDate")
-                       || raw.Columns.Contains("SubmittedDate")  || raw.Columns.Contains("RequestDate");
-        bool hasComment = raw.Columns.Contains("ReviewComment")  || raw.Columns.Contains("Comment")
-                       || raw.Columns.Contains("ReviewerComment");
+        string dateCol = raw.Columns.Contains("UploadDate")    ? "UploadDate"
+                       : raw.Columns.Contains("CreatedDate")   ? "CreatedDate"
+                       : raw.Columns.Contains("SubmittedDate") ? "SubmittedDate"
+                       : raw.Columns.Contains("RequestDate")   ? "RequestDate" : null;
 
-        string dateCol    = hasDate    ? (raw.Columns.Contains("UploadDate")    ? "UploadDate"
-                                       : raw.Columns.Contains("CreatedDate")   ? "CreatedDate"
-                                       : raw.Columns.Contains("SubmittedDate") ? "SubmittedDate"
-                                       : "RequestDate") : null;
-        string commentCol = hasComment ? (raw.Columns.Contains("ReviewComment")   ? "ReviewComment"
-                                       : raw.Columns.Contains("Comment")         ? "Comment"
-                                       : "ReviewerComment") : null;
+        string commentCol = raw.Columns.Contains("ReviewComment")   ? "ReviewComment"
+                          : raw.Columns.Contains("Comment")         ? "Comment"
+                          : raw.Columns.Contains("ReviewerComment") ? "ReviewerComment" : null;
 
         foreach (DataRow r in raw.Rows)
         {
-            string status = r["Status"] != DBNull.Value ? r["Status"].ToString() : "Pending";
-            string badgeClass = status.Equals("Approved", StringComparison.OrdinalIgnoreCase) ? "badge-approved"
-                              : status.Equals("Rejected", StringComparison.OrdinalIgnoreCase) ? "badge-rejected"
-                              : "badge-pending";
-            string badge = "<span class='status-badge " + badgeClass + "'>" + status + "</span>";
-
-            string date    = dateCol    != null && r[dateCol]    != DBNull.Value
-                             ? Convert.ToDateTime(r[dateCol]).ToString("yyyy-MM-dd") : "—";
-            string comment = commentCol != null && r[commentCol] != DBNull.Value
-                             ? r[commentCol].ToString() : "";
-
-            display.Rows.Add(r["UploadRequestID"].ToString(), date, status, badge, comment);
+            string status  = r["Status"] != DBNull.Value ? r["Status"].ToString() : "Pending";
+            string date    = dateCol    != null && r[dateCol]    != DBNull.Value ? Convert.ToDateTime(r[dateCol]).ToString("yyyy-MM-dd") : "—";
+            string comment = commentCol != null && r[commentCol] != DBNull.Value ? r[commentCol].ToString() : "";
+            display.Rows.Add(r["UploadRequestID"].ToString(), date, status, comment);
         }
 
         rptHistory.DataSource = display;
         rptHistory.DataBind();
-        pnlHistoryGrid.Visible = true;
-    }
-
-    private void ShowError(string message)
-    {
-        string safe = message.Replace("'", "\\'").Replace("\r", "").Replace("\n", " ");
-        ScriptManager.RegisterStartupScript(this, GetType(), "showErrorModal",
-            string.Format("document.getElementById('modalErrorMsg').innerText='{0}';$('#modalError').modal('show');", safe),
-            true);
+        pnlHistoryEmpty.Visible = false;
+        pnlHistoryGrid.Visible  = true;
     }
 
     protected void btnUpload_Click(object sender, EventArgs e)
     {
         if (!fuPMTDP.HasFile)
         {
-            ShowError("Please select an Excel file (.xlsx or .xls) first.");
+            ShowError("Please select an Excel file (.xlsx) first.");
             return;
         }
 
         string ext = Path.GetExtension(fuPMTDP.FileName).ToLowerInvariant();
         if (ext != ".xlsx" && ext != ".xls")
         {
-            ShowError("Invalid file type. Only .xlsx and .xls files are accepted.");
+            ShowError("Invalid file type. Only .xlsx files are accepted.");
             return;
         }
 
@@ -100,7 +83,6 @@ public partial class i_PMTDPUpload : Page
         {
             string folder = Server.MapPath("~/Uploads/PMTDP/");
             Directory.CreateDirectory(folder);
-
             string path = folder + DateTime.Now.Ticks + "_" + fuPMTDP.FileName;
             fuPMTDP.SaveAs(path);
 
@@ -112,17 +94,20 @@ public partial class i_PMTDPUpload : Page
                 return;
             }
 
-            gvPreview.DataSource = dt;
-            gvPreview.DataBind();
+            // Populate header meta literals
+            litGoal.Text      = Server.HtmlEncode(GetContext(dt, "PDPGoal"));
+            litPriority.Text  = Server.HtmlEncode(GetContext(dt, "PriorityName"));
+            litProgramme.Text = Server.HtmlEncode(GetContext(dt, "ProgrammeName"));
+            litImpact.Text    = Server.HtmlEncode(GetContext(dt, "ImpactStatement"));
+            litRowCount.Text  = string.Format("<span class='row-count'>{0} rows</span>", dt.Rows.Count);
 
-            previewCard.Visible = true;
-            lblRowCount.Text = dt.Rows.Count + " rows";
+            BuildPreviewTable(dt);
 
-            ViewState["DT"] = dt;
+            pnlUpload.Visible  = false;
+            pnlPreview.Visible = true;
+
+            ViewState["DT"]   = dt;
             ViewState["FILE"] = path;
-
-            btnSubmit.Visible = true;
-            lblMsg.Text = dt.Rows.Count + " row(s) loaded. Review the preview below, then click Submit for Approval.";
         }
         catch (Exception ex)
         {
@@ -141,19 +126,72 @@ public partial class i_PMTDPUpload : Page
         );
 
         foreach (DataRow r in dt.Rows)
-        {
             uploadDataDAL.InsertUploadData(uploadId, r, "Insert");
-        }
 
-        btnSubmit.Visible = false;
-        previewCard.Visible = false;
+        ViewState.Remove("DT");
+        ViewState.Remove("FILE");
 
-        lblMsg.Text = "Your PMTDP data has been submitted for approval. A Planning Unit reviewer will assess your submission and you will be notified of the outcome.";
-        lblMsg.CssClass = "msg-bar visible";
+        pnlPreview.Visible = false;
+        pnlUpload.Visible  = true;
 
-        // Show the success modal client-side after the postback
         ScriptManager.RegisterStartupScript(this, GetType(), "showSubmitModal",
             "$('#modalSubmitSuccess').modal('show');", true);
+
+        LoadHistory();
+    }
+
+    protected void btnCancel_Click(object sender, EventArgs e)
+    {
+        ViewState.Remove("DT");
+        ViewState.Remove("FILE");
+        pnlPreview.Visible = false;
+        pnlUpload.Visible  = true;
+    }
+
+    private string GetContext(DataTable dt, string colName)
+    {
+        if (!dt.Columns.Contains(colName) || dt.Rows.Count == 0) return "";
+        return (dt.Rows[0][colName] ?? "").ToString().Trim();
+    }
+
+    private void BuildPreviewTable(DataTable data)
+    {
+        string[] cols   = { "OutcomeName","IndicatorName","IndicatorType",
+                            "ImplementingInstitution","InterventionName","InterventionIndicator",
+                            "Baseline2023_24","TermTarget2030","TermBudget","SpatialReference" };
+        string[] labels = { "Desired Outcome","Outcome Indicator","Type",
+                            "Institution","Intervention","Indicator",
+                            "Baseline 23/24","Term Target","Budget","Spatial" };
+
+        var sb = new StringBuilder();
+        sb.Append("<table class='preview-table'><thead><tr>");
+        for (int i = 0; i < labels.Length; i++)
+            sb.AppendFormat("<th>{0}</th>", labels[i]);
+        sb.Append("</tr></thead><tbody>");
+
+        foreach (DataRow row in data.Rows)
+        {
+            sb.Append("<tr>");
+            foreach (string col in cols)
+            {
+                string val = data.Columns.Contains(col)
+                    ? HttpUtility.HtmlEncode((row[col] ?? "").ToString())
+                    : "";
+                sb.AppendFormat("<td>{0}</td>", val);
+            }
+            sb.Append("</tr>");
+        }
+        sb.Append("</tbody></table>");
+
+        phPreviewTable.Controls.Add(new Literal { Text = sb.ToString() });
+    }
+
+    private void ShowError(string message)
+    {
+        string safe = message.Replace("'", "\\'").Replace("\r", "").Replace("\n", " ");
+        ScriptManager.RegisterStartupScript(this, GetType(), "showErrorModal",
+            string.Format("document.getElementById('modalErrorMsg').innerText='{0}';$('#modalError').modal('show');", safe),
+            true);
     }
 
     private DataTable ReadExcel(string path)
@@ -168,7 +206,6 @@ public partial class i_PMTDPUpload : Page
 
         using (var package = new ExcelPackage(new FileInfo(path)))
         {
-            // Find sheet named PMTDP (case-insensitive); fall back to first sheet
             ExcelWorksheet sheet = null;
             foreach (var ws in package.Workbook.Worksheets)
             {
@@ -179,12 +216,53 @@ public partial class i_PMTDPUpload : Page
                 sheet = package.Workbook.Worksheets[0];
 
             if (sheet.Dimension == null)
-                return new DataTable(); // empty sheet
+                return new DataTable();
 
             int rowCount = sheet.Dimension.Rows;
             int colCount = sheet.Dimension.Columns;
 
-            // Build a raw all-string DataTable — same shape FindHeaderRow expects
+            // ── Step 1: scan first 10 rows for header-section context metadata ──
+            var context = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var metaLabels = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Provincial Development Plan Goal", "PDPGoal"         },
+                { "Provincial Development",           "PDPGoal"         },
+                { "PDP Goal",                         "PDPGoal"         },
+                { "Priority Focus",                   "PriorityName"    },
+                { "Priority",                         "PriorityName"    },
+                { "Integration Programme",            "ProgrammeName"   },
+                { "Programme",                        "ProgrammeName"   },
+                { "Impact Statement",                 "ImpactStatement" },
+                { "Impact",                           "ImpactStatement" },
+            };
+            for (int r = 1; r <= Math.Min(10, rowCount); r++)
+            {
+                for (int c = 1; c <= Math.Min(5, colCount); c++)
+                {
+                    string cellText = (sheet.Cells[r, c].Text ?? "").Trim().TrimEnd(':');
+                    foreach (var kv in metaLabels)
+                    {
+                        if (!cellText.StartsWith(kv.Key, StringComparison.OrdinalIgnoreCase)) continue;
+                        if (context.ContainsKey(kv.Value)) continue;
+                        string val = "";
+                        if (cellText.Contains(":"))
+                            val = cellText.Substring(cellText.IndexOf(':') + 1).Trim();
+                        if (string.IsNullOrEmpty(val))
+                        {
+                            for (int cc = c + 1; cc <= colCount; cc++)
+                            {
+                                val = (sheet.Cells[r, cc].Text ?? "").Trim();
+                                if (!string.IsNullOrEmpty(val)) break;
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(val))
+                            context[kv.Value] = val;
+                        break;
+                    }
+                }
+            }
+
+            // ── Step 2: build raw all-string DataTable ──
             DataTable raw = new DataTable();
             for (int c = 0; c < colCount; c++)
                 raw.Columns.Add("Col" + c, typeof(string));
@@ -200,19 +278,31 @@ public partial class i_PMTDPUpload : Page
                 raw.Rows.Add(vals);
             }
 
+            // ── Step 3: find data header row, build typed DataTable ──
             int headerRowIdx = FindHeaderRow(raw);
             DataTable dt = BuildFromHeaderRow(raw, headerRowIdx);
             NormalizeColumns(dt);
+
+            // ── Step 4: inject context fields not already present as data columns ──
+            foreach (var kv in context)
+            {
+                if (!dt.Columns.Contains(kv.Key))
+                {
+                    dt.Columns.Add(kv.Key, typeof(string));
+                    foreach (DataRow row in dt.Rows)
+                        row[kv.Key] = kv.Value;
+                }
+            }
+
             return dt;
         }
     }
 
-    // Scans the first 5 rows to find the one with the most cells matching
-    // known column names. Handles instruction/banner rows before the real header.
+    // Scans the first 10 rows to find the one with the most _colMap matches.
     private int FindHeaderRow(DataTable raw)
     {
         int bestRow = 0, bestScore = 0;
-        for (int r = 0; r < Math.Min(5, raw.Rows.Count); r++)
+        for (int r = 0; r < Math.Min(10, raw.Rows.Count); r++)
         {
             int score = 0;
             foreach (DataColumn col in raw.Columns)
@@ -225,8 +315,6 @@ public partial class i_PMTDPUpload : Page
         return bestRow;
     }
 
-    // Builds a typed DataTable using the given row as column names,
-    // then adds all subsequent non-empty rows as data.
     private static DataTable BuildFromHeaderRow(DataTable raw, int headerRowIdx)
     {
         DataTable dt = new DataTable();
@@ -261,83 +349,61 @@ public partial class i_PMTDPUpload : Page
         return dt;
     }
 
-    // Maps common Excel header variations to the canonical names expected by
-    // InsertUploadData() / n_sp_PMTDP_InsertUploadData.
     private static readonly Dictionary<string, string> _colMap =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-        { "Priority",                  "PriorityName" },
-        { "Priority Name",             "PriorityName" },
-        { "Priority Focus",            "PriorityName" },
-        { "Integration Programme",     "ProgrammeName" },
-        { "Programme",                 "ProgrammeName" },
-        { "Programme Name",            "ProgrammeName" },
-        { "Leading Department",        "LeaderDeptName" },
-        { "Leader Dept",               "LeaderDeptName" },
-        { "Desired Outcome",           "OutcomeName" },
-        { "Outcome",                   "OutcomeName" },
-        { "Outcome Name",              "OutcomeName" },
-        { "Outcome Indicator",         "IndicatorName" },
-        { "Indicator",                 "IndicatorName" },
-        { "Indicator Name",            "IndicatorName" },
-        { "Indicator Type",            "IndicatorType" },
-        { "Baseline",                  "BaselineValue" },
-        { "PDP Baseline 2019/2020",    "BaselineValue" },
-        { "Baseline Value",            "BaselineValue" },
-        { "PDP Target 2030",           "TermTargetValue" },
-        { "Term Target",               "TermTargetValue" },
-        { "Term Target Value",         "TermTargetValue" },
-        { "Implementing Institution",  "ImplementingInstitution" },
-        { "Implementing Institutions", "ImplementingInstitution" },
-        { "Is Cumulative",             "IsCumulative" },
-        { "Cumulative",                "IsCumulative" },
-        { "Is Percentage",             "IsPercentage" },
-        { "Percentage",                "IsPercentage" },
-        { "Intervention",              "InterventionName" },
-        { "Intervention Name",         "InterventionName" },
-        { "Intervention Indicator",    "InterventionIndicator" },
-        { "Baseline 2023/24",          "Baseline2023_24" },
-        { "Baseline 23/24",            "Baseline2023_24" },
-        { "2030 Term Target",          "TermTarget2030" },
-        { "Term Target 2030",          "TermTarget2030" },
-        { "Term Budget",               "TermBudget" },
-        { "Spatial Reference",         "SpatialReference" },
-        { "Spatial Referencing",       "SpatialReference" },
+        { "Provincial Development Plan Goal",   "PDPGoal" },
+        { "Provincial Development Plan Goal 1", "PDPGoal" },
+        { "PDP Goal",                           "PDPGoal" },
+        { "PDP Goal 1",                         "PDPGoal" },
+        { "Goal",                               "PDPGoal" },
+        { "Impact",                             "ImpactStatement" },
+        { "Impact Statement",                   "ImpactStatement" },
+        { "Priority",                           "PriorityName" },
+        { "Priority Name",                      "PriorityName" },
+        { "Priority Focus",                     "PriorityName" },
+        { "Integration Programme",              "ProgrammeName" },
+        { "Programme",                          "ProgrammeName" },
+        { "Programme Name",                     "ProgrammeName" },
+        { "Leading Department",                 "LeaderDeptName" },
+        { "Leader Dept",                        "LeaderDeptName" },
+        { "Desired Outcome",                    "OutcomeName" },
+        { "Outcome",                            "OutcomeName" },
+        { "Outcome Name",                       "OutcomeName" },
+        { "Outcome Indicator",                  "IndicatorName" },
+        { "Indicator",                          "IndicatorName" },
+        { "Indicator Name",                     "IndicatorName" },
+        { "Indicator Type",                     "IndicatorType" },
+        { "Baseline",                           "BaselineValue" },
+        { "PDP Baseline 2019/2020",             "BaselineValue" },
+        { "Baseline 2019/2020",                 "BaselineValue" },
+        { "Baseline Value",                     "BaselineValue" },
+        { "PDP Target 2030",                    "TermTargetValue" },
+        { "Target 2030",                        "TermTargetValue" },
+        { "Term Target",                        "TermTargetValue" },
+        { "Term Target Value",                  "TermTargetValue" },
+        { "Implementing Institution",           "ImplementingInstitution" },
+        { "Implementing Institutions",          "ImplementingInstitution" },
+        { "Supporting Institutions",            "SupportingInstitutions" },
+        { "Supporting Institution",             "SupportingInstitutions" },
+        { "Dependency",                         "SupportingInstitutions" },
+        { "Is Cumulative",                      "IsCumulative" },
+        { "Cumulative",                         "IsCumulative" },
+        { "Is Percentage",                      "IsPercentage" },
+        { "Percentage",                         "IsPercentage" },
+        { "Intervention",                       "InterventionName" },
+        { "Intervention Name",                  "InterventionName" },
+        { "Intervention Indicator",             "InterventionIndicator" },
+        { "Baseline 2023/24",                   "Baseline2023_24" },
+        { "Baseline 23/24",                     "Baseline2023_24" },
+        { "Term Target 2030",                   "TermTarget2030" },
+        { "Term Target 2025-2030",              "TermTarget2030" },
+        { "Term Target 2025-30",                "TermTarget2030" },
+        { "2030 Term Target",                   "TermTarget2030" },
+        { "Term Budget",                        "TermBudget" },
+        { "Spatial Reference",                  "SpatialReference" },
+        { "Spatial Referencing",                "SpatialReference" },
     };
-
-    private static readonly Dictionary<string, string> _displayNames =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-    {
-        { "PriorityName",            "Priority Focus" },
-        { "ProgrammeName",           "Integration Programme" },
-        { "LeaderDeptName",          "Leading Department" },
-        { "OutcomeName",             "Desired Outcome" },
-        { "IndicatorName",           "Outcome Indicator" },
-        { "IndicatorType",           "Indicator Type" },
-        { "BaselineValue",           "Baseline Value" },
-        { "TermTargetValue",         "Term Target Value" },
-        { "ImplementingInstitution", "Implementing Institution" },
-        { "IsCumulative",            "Is Cumulative" },
-        { "IsPercentage",            "Is Percentage" },
-        { "InterventionName",        "Intervention Name" },
-        { "InterventionIndicator",   "Intervention Indicator" },
-        { "Baseline2023_24",         "Baseline 2023/24" },
-        { "TermTarget2030",          "Term Target 2030" },
-        { "TermBudget",              "Term Budget" },
-        { "SpatialReference",        "Spatial Reference" },
-    };
-
-    protected void gvPreview_RowCreated(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
-    {
-        if (e.Row.RowType != System.Web.UI.WebControls.DataControlRowType.Header) return;
-
-        foreach (System.Web.UI.WebControls.TableCell cell in e.Row.Cells)
-        {
-            string display;
-            if (_displayNames.TryGetValue(cell.Text, out display))
-                cell.Text = display;
-        }
-    }
 
     private static void NormalizeColumns(DataTable dt)
     {

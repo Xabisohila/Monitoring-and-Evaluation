@@ -142,6 +142,16 @@ body { background: var(--bg); font-family: var(--font); color: var(--text); }
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
 <div class="container" style="padding-top:80px; padding-bottom:60px;">
 
+    <%-- Back button --%>
+    <div style="margin-bottom:16px;">
+        <a href="j_PMTDPApprovalList.aspx"
+           style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;
+                  color:var(--muted);text-decoration:none;padding:6px 14px;border:1px solid var(--border);
+                  border-radius:8px;background:#fff;transition:background .15s;">
+            <i class="glyphicon glyphicon-chevron-left" style="font-size:11px;"></i> Back to List
+        </a>
+    </div>
+
     <%-- Page header --%>
     <div class="rv-header">
         <h2>

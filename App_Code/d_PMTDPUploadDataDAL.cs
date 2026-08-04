@@ -14,6 +14,8 @@ namespace MnE2.DAL
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@UploadRequestID", uploadId);
+                cmd.Parameters.AddWithValue("@PDPGoal",                Col(r, "PDPGoal"));
+                cmd.Parameters.AddWithValue("@ImpactStatement",        Col(r, "ImpactStatement"));
                 cmd.Parameters.AddWithValue("@PriorityName",           Col(r, "PriorityName"));
                 cmd.Parameters.AddWithValue("@ProgrammeName",          Col(r, "ProgrammeName"));
                 cmd.Parameters.AddWithValue("@LeaderDeptName",         Col(r, "LeaderDeptName"));

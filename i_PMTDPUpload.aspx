@@ -1,418 +1,265 @@
-<%@ Page Title="" Language="C#" MasterPageFile="~/akshara.master" AutoEventWireup="true" CodeFile="i_PMTDPUpload.aspx.cs" Inherits="i_PMTDPUpload" %>
+<%@ Page Title="PMTDP Upload" Language="C#" MasterPageFile="~/akshara.master" AutoEventWireup="true" CodeFile="i_PMTDPUpload.aspx.cs" Inherits="i_PMTDPUpload" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
 <style type="text/css">
-    .pmtdp-page { padding: 100px 0 60px; }
+:root {
+    --bg:      #f7f8fb;
+    --surface: #ffffff;
+    --border:  #dce3ec;
+    --text:    #1a2b4a;
+    --muted:   #64748b;
+    --primary: #0C2D48;
+    --accent:  #1d6f42;
+    --danger:  #c0392b;
+    --radius:  12px;
+    --shadow:  0 2px 12px rgba(0,0,0,.07);
+    --font:    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+body { background: var(--bg); font-family: var(--font); color: var(--text); }
 
-    /* Upload card */
-    .upload-card {
-        background: #fff;
-        border: 1px solid #dce3ec;
-        border-radius: 12px;
-        padding: 28px 32px;
-        box-shadow: 0 2px 12px rgba(0,0,0,.06);
-        margin-bottom: 28px;
-    }
-    .upload-card h3 { margin: 0 0 4px; font-size: 20px; font-weight: 700; color: #1a2b4a; }
-    .upload-card p.sub { color: #64748b; font-size: 13px; margin-bottom: 20px; }
+.pu-header { padding: 36px 0 22px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+.pu-header h2 { margin: 0 0 4px; font-size: 24px; font-weight: 800; color: var(--primary); }
+.pu-header p  { margin: 0; font-size: 13px; color: var(--muted); }
 
-    .upload-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.form-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 24px 28px; margin-bottom: 20px;
+}
+.form-card .card-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: var(--muted);
+    padding-bottom: 12px; border-bottom: 1px solid #edf2f7; margin-bottom: 20px;
+}
 
-    .file-wrapper {
-        flex: 1; min-width: 220px;
-        border: 2px dashed #c5d0de;
-        border-radius: 8px;
-        padding: 10px 14px;
-        background: #f8fafc;
-        font-size: 13px; color: #475569;
-    }
-    .file-wrapper input[type="file"] { width: 100%; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+.field input[type="file"] {
+    display: block; width: 100%; padding: 9px 12px; font-size: 13px;
+    border: 1px dashed #94a3b8; border-radius: 8px; background: #f8fafc;
+    cursor: pointer; box-sizing: border-box;
+}
+.field input[type="file"]:hover { border-color: var(--accent); }
 
-    .btn-upload {
-        padding: 10px 22px; font-size: 14px; font-weight: 600;
-        border-radius: 8px; border: none;
-        background: #1d6f42; color: #fff; cursor: pointer; white-space: nowrap;
-    }
-    .btn-upload:hover { background: #155a34; }
+.msg-info    { background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-left:4px solid #3b82f6; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:13px; }
+.msg-success { background:#f0fdf4; color:#14532d; border:1px solid #86efac; border-left:4px solid var(--accent); border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:13px; }
+.msg-error   { background:#fff1f2; color:#9f1239; border:1px solid #fecdd3; border-left:4px solid var(--danger); border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:13px; }
 
-    .btn-submit-approval {
-        padding: 10px 22px; font-size: 14px; font-weight: 600;
-        border-radius: 8px; border: none;
-        background: #0b5ed7; color: #fff; cursor: pointer;
-    }
-    .btn-submit-approval:hover { background: #094db0; }
+/* Step indicator */
+.step-indicator { display:flex; gap:0; margin-bottom:28px; }
+.step { flex:1; text-align:center; padding:10px 4px; font-size:12px; font-weight:600;
+        border-bottom:3px solid #e2e8f0; color:#94a3b8; }
+.step.active { border-color:var(--accent); color:var(--accent); }
+.step.done   { border-color:#64748b; color:#64748b; }
 
-    .msg-bar {
-        display: none; margin-top: 14px; padding: 10px 14px;
-        border-radius: 8px; font-size: 13px;
-        background: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1;
-    }
-    .msg-bar.visible { display: block; }
-    .msg-bar.error   { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+/* Meta info grid */
+.meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:600px) { .meta-grid { grid-template-columns:1fr; } }
+.meta-item { background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:12px 14px; }
+.meta-item .meta-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:4px; }
+.meta-item .meta-value { font-size:13px; font-weight:600; color:var(--text); }
 
-    /* Preview card */
-    .preview-card {
-        background: #fff; border: 1px solid #dce3ec; border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; margin-bottom: 20px;
-    }
-    .preview-header {
-        padding: 16px 24px; border-bottom: 1px solid #e8edf3;
-        display: flex; align-items: center; justify-content: space-between;
-        background: #f8fafc;
-    }
-    .preview-header h4 { margin: 0; font-size: 15px; font-weight: 700; color: #1a2b4a; }
-    .badge-count {
-        background: #1d6f42; color: #fff; font-size: 12px; font-weight: 600;
-        padding: 3px 10px; border-radius: 20px;
-    }
+/* Preview table */
+.preview-wrap { overflow-x:auto; margin-top:8px; }
+.preview-table { width:100%; border-collapse:collapse; font-size:12px; min-width:900px; }
+.preview-table th { background:var(--primary); color:#fff; padding:8px 10px; text-align:left; white-space:nowrap; font-weight:600; }
+.preview-table td { padding:7px 10px; border-bottom:1px solid #edf2f7; vertical-align:top; }
+.preview-table tr:hover td { background:#f8fafc; }
+.preview-table td:empty::after { content:"—"; color:#cbd5e1; }
+.row-count { display:inline-block; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:10px; font-size:12px; font-weight:700; margin-left:8px; }
 
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+/* Buttons */
+.btn-primary   { padding:9px 24px; font-size:13px; font-weight:700; border:none; border-radius:8px; cursor:pointer; background:var(--accent); color:#fff; transition:background .15s; }
+.btn-primary:hover { background:#155a34; }
+.btn-secondary { padding:9px 20px; font-size:13px; font-weight:600; border-radius:8px; cursor:pointer; background:#fff; color:var(--text); border:1.5px solid var(--border); }
+.btn-secondary:hover { background:#f1f5f9; }
+.btn-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
-    /* Preview table */
-    .pmtdp-tbl { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
-    .pmtdp-tbl th {
-        padding: 9px 12px; font-weight: 600; font-size: 11px;
-        text-transform: uppercase; letter-spacing: .4px;
-        border-right: 1px solid rgba(255,255,255,.2);
-        border-bottom: 2px solid rgba(0,0,0,.1);
-        color: #fff;
-    }
-    .pmtdp-tbl td {
-        padding: 8px 12px; border-bottom: 1px solid #edf2f7;
-        border-right: 1px solid #edf2f7; color: #334155;
-        max-width: 220px; overflow: hidden; text-overflow: ellipsis; vertical-align: top;
-    }
-    .pmtdp-tbl tr:hover td { background: #f0f9ff !important; }
-    .pmtdp-tbl tr:last-child td { border-bottom: none; }
-
-    /* Column group header colours */
-    .col-priority { background-color: #1e6b9e; }
-    .col-outcome  { background-color: #1d6f42; }
-    .col-inst     { background-color: #92400e; }
-    .col-interv   { background-color: #5b21b6; }
-
-    /* Column group cell tints */
-    .col-priority-td { background-color: #eff8ff; }
-    .col-outcome-td  { background-color: #f0fdf4; }
-    .col-inst-td     { background-color: #fffbeb; }
-    .col-interv-td   { background-color: #faf5ff; }
-
-    /* Alternating row — slightly deeper tints */
-    .pmtdp-tbl tr.alt td.col-priority-td { background-color: #e0f0ff; }
-    .pmtdp-tbl tr.alt td.col-outcome-td  { background-color: #e0f7e8; }
-    .pmtdp-tbl tr.alt td.col-inst-td     { background-color: #fef3d0; }
-    .pmtdp-tbl tr.alt td.col-interv-td   { background-color: #ede8ff; }
-    .pmtdp-tbl tr.alt td                 { background-color: #f8fafc; }
-
-    /* My submissions history */
-    .history-card {
-        background: #fff; border: 1px solid #dce3ec; border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; margin-top: 32px;
-    }
-    .history-header {
-        padding: 16px 24px; background: #f8fafc;
-        border-bottom: 1px solid #e8edf3;
-        font-size: 15px; font-weight: 700; color: #1a2b4a;
-    }
-    .history-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .history-tbl th {
-        padding: 10px 14px; background: #f1f5f9; font-weight: 600;
-        color: #475569; text-align: left; border-bottom: 2px solid #dce3ec;
-    }
-    .history-tbl td {
-        padding: 10px 14px; border-bottom: 1px solid #edf2f7; color: #334155;
-        vertical-align: middle;
-    }
-    .history-tbl tr:last-child td { border-bottom: none; }
-    .history-tbl tr:hover td { background: #f8fafc; }
-    .status-badge {
-        display: inline-block; padding: 3px 10px; border-radius: 20px;
-        font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
-    }
-    .badge-pending  { background: #fef3c7; color: #92400e; }
-    .badge-approved { background: #d1fae5; color: #065f46; }
-    .badge-rejected { background: #fee2e2; color: #991b1b; }
-    .history-empty  { padding: 24px; text-align: center; color: #94a3b8; font-size: 13px; }
-    .btn-view-pmtdp {
-        display: inline-block; padding: 4px 12px; border-radius: 6px;
-        font-size: 11px; font-weight: 700; white-space: nowrap;
-        background: #1d6f42; color: #fff; text-decoration: none;
-        transition: opacity .15s;
-    }
-    .btn-view-pmtdp:hover { opacity: .85; color: #fff; text-decoration: none; }
+/* History */
+.badge-status { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.badge-pending  { background:#fef3c7; color:#92400e; }
+.badge-approved { background:#d1fae5; color:#065f46; }
+.badge-rejected { background:#fee2e2; color:#991b1b; }
+.my-uploads-table th { background:#0C2D48; color:#fff; font-size:12px; font-weight:600; padding:8px 10px; }
+.my-uploads-table td { font-size:12px; padding:7px 10px; vertical-align:middle; border-bottom:1px solid #edf2f7; }
+.my-uploads-table tr:hover td { background:#f8fafc; }
+.btn-view-pmtdp {
+    display:inline-block; padding:4px 12px; border-radius:6px;
+    font-size:11px; font-weight:700; color:#fff; background:var(--accent);
+    text-decoration:none; white-space:nowrap;
+}
+.btn-view-pmtdp:hover { opacity:.85; color:#fff; text-decoration:none; }
 </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
-<div class="pmtdp-page">
-<div class="container">
+<div class="container" style="padding-top:80px; padding-bottom:60px; max-width:1100px;">
 
-    <%-- Page title --%>
-    <div style="margin-bottom:24px;padding-top:24px;">
-        <h2 style="margin:0;font-size:24px;font-weight:700;color:#1a2b4a;">
-            PMTDP Upload &mdash; 5-Year Structure
-        </h2>
-        <p style="color:#64748b;font-size:13px;margin:4px 0 0;">
-            Upload the PMTDP Excel file. A second Planning Unit user must approve before data is applied.
-        </p>
+    <div class="pu-header">
+        <h2><i class="glyphicon glyphicon-upload"></i> PMTDP Upload &mdash; 5-Year Structure</h2>
+        <p>Upload the PMTDP Excel file. A second Planning Unit user must approve before data is applied.</p>
     </div>
 
-    <%-- Upload card --%>
-    <div class="upload-card">
-        <h3>Select File</h3>
-        <p class="sub">Accepted: .xlsx &nbsp;&nbsp;|&nbsp;&nbsp; Sheet must be named <strong>PMTDP</strong></p>
-        <div class="upload-row">
-            <div class="file-wrapper">
-                <asp:FileUpload ID="fuPMTDP" runat="server" />
+    <%-- Alerts --%>
+    <asp:Panel ID="pnlError"   runat="server" Visible="false">
+        <div class="msg-error"><i class="glyphicon glyphicon-exclamation-sign"></i> <asp:Literal ID="litError" runat="server" /></div>
+    </asp:Panel>
+    <asp:Panel ID="pnlSuccess" runat="server" Visible="false">
+        <div class="msg-success"><i class="glyphicon glyphicon-ok-circle"></i> <asp:Literal ID="litSuccess" runat="server" /></div>
+    </asp:Panel>
+
+    <%-- ── STEP 1: File upload ── --%>
+    <asp:Panel ID="pnlUpload" runat="server">
+        <div class="step-indicator">
+            <div class="step active">1. Upload File</div>
+            <div class="step">2. Preview</div>
+            <div class="step">3. Submit for Review</div>
+        </div>
+
+        <div class="form-card">
+            <div class="card-title">Select PMTDP Excel File</div>
+            <div class="msg-info">
+                <strong>Before uploading:</strong> ensure your file follows the PMTDP template &mdash;
+                fill in the 4 header rows (Goal / Priority / Programme / Impact), then add one intervention-indicator per row.
+                &nbsp;&nbsp;<a href="Templates/PMTDP_Upload_Template.xlsx" style="font-weight:700;color:#0C2D48;">
+                    <i class="glyphicon glyphicon-download-alt"></i> Download Template
+                </a>
             </div>
-            <asp:Button ID="btnUpload" runat="server" Text="Upload &amp; Preview"
-                OnClick="btnUpload_Click" CssClass="btn-upload" />
-            <asp:Button ID="btnSubmit" runat="server" Text="Submit for Approval"
-                OnClick="btnSubmit_Click" Visible="false" CssClass="btn-submit-approval" />
+            <div class="field" style="margin-top:16px;">
+                <label>PMTDP Excel File (.xlsx) <span style="color:var(--danger)">*</span></label>
+                <asp:FileUpload ID="fuPMTDP" runat="server" accept=".xlsx" />
+            </div>
+            <div style="margin-top:16px;">
+                <asp:Button ID="btnUpload" runat="server" Text="Upload &amp; Preview"
+                    CssClass="btn-primary" OnClick="btnUpload_Click" />
+            </div>
         </div>
-        <asp:Label ID="lblMsg" runat="server" CssClass="msg-bar" />
-    </div>
+    </asp:Panel>
 
-    <%-- Preview card — hidden until a file is successfully loaded --%>
-    <asp:Panel ID="previewCard" runat="server" Visible="false" CssClass="preview-card">
-        <div class="preview-header">
-            <h4>Data Preview</h4>
-            <asp:Label ID="lblRowCount" runat="server" CssClass="badge-count" />
-        </div>
-
-        <%-- Colour legend --%>
-        <div style="padding:10px 24px;background:#f8fafc;border-bottom:1px solid #e8edf3;font-size:12px;display:flex;gap:20px;flex-wrap:wrap;">
-            <span><span style="display:inline-block;width:12px;height:12px;background:#1e6b9e;border-radius:3px;margin-right:5px;vertical-align:middle;"></span>Priority &amp; Programme</span>
-            <span><span style="display:inline-block;width:12px;height:12px;background:#1d6f42;border-radius:3px;margin-right:5px;vertical-align:middle;"></span>Outcome &amp; Indicator</span>
-            <span><span style="display:inline-block;width:12px;height:12px;background:#92400e;border-radius:3px;margin-right:5px;vertical-align:middle;"></span>Institutions &amp; Flags</span>
-            <span><span style="display:inline-block;width:12px;height:12px;background:#5b21b6;border-radius:3px;margin-right:5px;vertical-align:middle;"></span>Intervention Level</span>
+    <%-- ── STEP 2: Preview + Confirm ── --%>
+    <asp:Panel ID="pnlPreview" runat="server" Visible="false">
+        <div class="step-indicator">
+            <div class="step done">1. Upload File</div>
+            <div class="step active">2. Preview</div>
+            <div class="step">3. Submit for Review</div>
         </div>
 
-        <div class="table-scroll">
-            <asp:GridView ID="gvPreview" runat="server"
-                AutoGenerateColumns="true"
-                CssClass="pmtdp-tbl"
-                GridLines="None"
-                OnRowCreated="gvPreview_RowCreated" />
+        <%-- Header metadata --%>
+        <div class="form-card">
+            <div class="card-title">Extracted Header Information</div>
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <div class="meta-label">Development Plan Goal</div>
+                    <div class="meta-value"><asp:Literal ID="litGoal" runat="server" /></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Priority Focus</div>
+                    <div class="meta-value"><asp:Literal ID="litPriority" runat="server" /></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Integration Programme</div>
+                    <div class="meta-value"><asp:Literal ID="litProgramme" runat="server" /></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Impact Statement</div>
+                    <div class="meta-value"><asp:Literal ID="litImpact" runat="server" /></div>
+                </div>
+            </div>
+        </div>
+
+        <%-- Data preview table --%>
+        <div class="form-card">
+            <div class="card-title">
+                Data Preview
+                <asp:Literal ID="litRowCount" runat="server" />
+            </div>
+            <div class="preview-wrap">
+                <asp:PlaceHolder ID="phPreviewTable" runat="server" />
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <asp:Button ID="btnSubmit" runat="server" Text="Submit for Review"
+                CssClass="btn-primary" OnClick="btnSubmit_Click" />
+            <asp:Button ID="btnCancel" runat="server" Text="Cancel &mdash; Upload Different File"
+                CssClass="btn-secondary" OnClick="btnCancel_Click" CausesValidation="false" />
         </div>
     </asp:Panel>
 
     <%-- ── My Submissions History ── --%>
-    <div class="history-card">
-        <div class="history-header">My PMTDP Submissions</div>
+    <div class="form-card" style="margin-top:36px;">
+        <div class="card-title">My PMTDP Submissions</div>
         <asp:Panel ID="pnlHistoryEmpty" runat="server" Visible="false">
-            <div class="history-empty">You have not submitted any PMTDP uploads yet.</div>
+            <p style="color:var(--muted);font-size:13px;margin:0;">You have not submitted any PMTDP uploads yet.</p>
         </asp:Panel>
         <asp:Panel ID="pnlHistoryGrid" runat="server" Visible="false">
-        <div class="table-scroll" id="historyTableWrap">
-            <asp:Repeater ID="rptHistory" runat="server">
-                <HeaderTemplate>
-                    <table class="history-tbl">
-                    <tr>
-                        <th>Ref #</th>
-                        <th>Submitted</th>
-                        <th>Status</th>
-                        <th>Reviewer Comment</th>
-                        <th></th>
-                    </tr>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%# Eval("UploadRequestID") %></td>
-                        <td><%# Eval("SubmittedDate", "{0:dd MMM yyyy HH:mm}") %></td>
-                        <td><%# (string)Eval("StatusBadge") %></td>
-                        <td><%# Eval("ReviewComment") %></td>
-                        <td><%# Eval("Status").ToString() == "Approved"
-                            ? string.Format("<a href='j_PMTDPApprovalView.aspx?id={0}' class='btn-view-pmtdp'>View PMTDP &rarr;</a>", Eval("UploadRequestID"))
-                            : "" %></td>
-                    </tr>
-                </ItemTemplate>
-                <AlternatingItemTemplate>
-                    <tr style="background:#f8fafc;">
-                        <td><%# Eval("UploadRequestID") %></td>
-                        <td><%# Eval("SubmittedDate", "{0:dd MMM yyyy HH:mm}") %></td>
-                        <td><%# (string)Eval("StatusBadge") %></td>
-                        <td><%# Eval("ReviewComment") %></td>
-                        <td><%# Eval("Status").ToString() == "Approved"
-                            ? string.Format("<a href='j_PMTDPApprovalView.aspx?id={0}' class='btn-view-pmtdp'>View PMTDP &rarr;</a>", Eval("UploadRequestID"))
-                            : "" %></td>
-                    </tr>
-                </AlternatingItemTemplate>
-                <FooterTemplate>
-                    </table>
-                </FooterTemplate>
-            </asp:Repeater>
-        </div>
-        <div id="historyPager" style="display:none; padding:12px 20px; border-top:1px solid #edf2f7;
-             display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-            <span id="historyPageInfo" style="font-size:12px; color:#64748b;"></span>
-            <div style="display:flex; gap:6px;">
-                <button type="button" id="historyPrev" onclick="historyPage(-1)"
-                    style="padding:5px 14px; font-size:12px; font-weight:600; border-radius:6px;
-                           border:1px solid #dce3ec; background:#fff; color:#1a2b4a; cursor:pointer;">
-                    &lsaquo; Prev
-                </button>
-                <button type="button" id="historyNext" onclick="historyPage(1)"
-                    style="padding:5px 14px; font-size:12px; font-weight:600; border-radius:6px;
-                           border:1px solid #dce3ec; background:#fff; color:#1a2b4a; cursor:pointer;">
-                    Next &rsaquo;
-                </button>
+            <div class="preview-wrap">
+                <asp:Repeater ID="rptHistory" runat="server">
+                    <HeaderTemplate>
+                        <table class="preview-table my-uploads-table">
+                        <thead><tr>
+                            <th>Ref #</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Reviewer Comment</th>
+                            <th></th>
+                        </tr></thead>
+                        <tbody>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td><%# Eval("UploadRequestID") %></td>
+                            <td><%# Eval("SubmittedDate") %></td>
+                            <td><span class="badge-status badge-<%# Eval("Status").ToString().ToLower() %>"><%# Eval("Status") %></span></td>
+                            <td><%# Eval("ReviewComment") %></td>
+                            <td><%# Eval("Status").ToString() == "Approved"
+                                ? string.Format("<a href='j_PMTDPApprovalView.aspx?id={0}' class='btn-view-pmtdp'>View PMTDP &rarr;</a>", Eval("UploadRequestID"))
+                                : "" %></td>
+                        </tr>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        </tbody></table>
+                    </FooterTemplate>
+                </asp:Repeater>
             </div>
-        </div>
         </asp:Panel>
     </div>
 
 </div>
+
+<%-- ── Submission success modal ── --%>
+<div class="modal fade" id="modalSubmitSuccess" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:480px;">
+        <div class="modal-content" style="border-radius:14px;border:none;box-shadow:0 8px 40px rgba(0,0,0,.18);">
+            <div class="modal-body" style="padding:40px 36px 28px;text-align:center;">
+                <div style="width:72px;height:72px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;color:#059669;">&#10003;</div>
+                <h4 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a2b4a;">Submitted for Approval</h4>
+                <p style="color:#64748b;font-size:14px;margin:0 0 6px;">Your PMTDP upload has been queued for review.</p>
+                <p style="color:#64748b;font-size:13px;margin:0;">A second Planning Unit user must approve the upload before the data is applied. You will <strong>not</strong> be able to approve your own submission.</p>
+            </div>
+            <div class="modal-footer" style="border:none;padding:0 36px 32px;justify-content:center;gap:12px;">
+                <button type="button" class="btn-primary" style="min-width:130px;"
+                    data-dismiss="modal" onclick="window.location.href='i_PMTDPUpload.aspx';">Upload Another</button>
+                <button type="button" class="btn-secondary" style="min-width:100px;" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<%-- ── Validation / error modal ── --%>
-<div class="modal fade" id="modalError" tabindex="-1" role="dialog" aria-labelledby="modalErrorLabel" aria-hidden="true">
+<%-- ── Error modal ── --%>
+<div class="modal fade" id="modalError" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:440px;">
         <div class="modal-content" style="border-radius:14px;border:none;box-shadow:0 8px 40px rgba(0,0,0,.18);">
             <div class="modal-body" style="padding:40px 36px 28px;text-align:center;">
-                <div style="width:72px;height:72px;background:#fff1f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;color:#be123c;">
-                    &#9888;
-                </div>
+                <div style="width:72px;height:72px;background:#fff1f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;color:#be123c;">&#9888;</div>
                 <h4 style="margin:0 0 10px;font-size:18px;font-weight:700;color:#1a2b4a;">Action Required</h4>
                 <p id="modalErrorMsg" style="color:#64748b;font-size:14px;margin:0;line-height:1.6;"></p>
             </div>
             <div class="modal-footer" style="border:none;padding:0 36px 32px;justify-content:center;">
-                <button type="button" class="btn-submit-approval" style="min-width:100px;" data-dismiss="modal">OK</button>
+                <button type="button" class="btn-primary" style="min-width:100px;" data-dismiss="modal">OK</button>
             </div>
         </div>
     </div>
 </div>
 
-<%-- ── Submission success modal ── --%>
-<div class="modal fade" id="modalSubmitSuccess" tabindex="-1" role="dialog" aria-labelledby="modalSubmitLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:480px;">
-        <div class="modal-content" style="border-radius:14px;border:none;box-shadow:0 8px 40px rgba(0,0,0,.18);">
-
-            <div class="modal-body" style="padding:40px 36px 28px;text-align:center;">
-                <%-- Green circle tick icon --%>
-                <div style="width:72px;height:72px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px;color:#059669;">
-                    &#10003;
-                </div>
-                <h4 style="margin:0 0 8px;font-size:20px;font-weight:700;color:#1a2b4a;">Submitted for Approval</h4>
-                <p style="color:#64748b;font-size:14px;margin:0 0 6px;">
-                    Your PMTDP upload has been queued for review.
-                </p>
-                <p style="color:#64748b;font-size:13px;margin:0;">
-                    A second Planning Unit user must approve the upload before the data is applied to the system.
-                    You will <strong>not</strong> be able to approve your own submission.
-                </p>
-            </div>
-
-            <div class="modal-footer" style="border:none;padding:0 36px 32px;justify-content:center;gap:12px;">
-                <button type="button" class="btn-upload" style="min-width:130px;"
-                    data-dismiss="modal" onclick="window.location.href='i_PMTDPUpload.aspx';">
-                    Upload Another
-                </button>
-                <button type="button" style="min-width:130px;padding:10px 22px;font-size:14px;font-weight:600;border-radius:8px;border:1px solid #dce3ec;background:#fff;color:#1a2b4a;cursor:pointer;"
-                    data-dismiss="modal">
-                    Close
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<script type="text/javascript">
-// ── History table pagination ───────────────────────────────
-(function () {
-    var PAGE_SIZE = 10;
-    var currentPage = 1;
-
-    function initHistoryPager() {
-        var tbl = document.querySelector('#historyTableWrap .history-tbl');
-        if (!tbl) return;
-
-        var rows = tbl.querySelectorAll('tbody tr');
-        if (!rows.length) {
-            // repeater renders without tbody in some cases — grab all non-header trs
-            rows = [];
-            tbl.querySelectorAll('tr').forEach(function(r) {
-                if (!r.querySelector('th')) rows.push(r);
-            });
-        }
-        if (rows.length <= PAGE_SIZE) return; // no pager needed
-
-        var totalPages = Math.ceil(rows.length / PAGE_SIZE);
-
-        function render() {
-            var start = (currentPage - 1) * PAGE_SIZE;
-            rows.forEach(function(r, i) {
-                r.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none';
-            });
-            document.getElementById('historyPageInfo').textContent =
-                'Page ' + currentPage + ' of ' + totalPages +
-                '  (' + rows.length + ' total)';
-            document.getElementById('historyPrev').disabled = currentPage === 1;
-            document.getElementById('historyNext').disabled = currentPage === totalPages;
-            document.getElementById('historyPrev').style.opacity = currentPage === 1 ? '0.4' : '1';
-            document.getElementById('historyNext').style.opacity = currentPage === totalPages ? '0.4' : '1';
-        }
-
-        document.getElementById('historyPager').style.display = 'flex';
-        render();
-
-        window.historyPage = function(dir) {
-            currentPage = Math.min(totalPages, Math.max(1, currentPage + dir));
-            render();
-        };
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initHistoryPager);
-    } else {
-        initHistoryPager();
-    }
-}());
-
-(function () {
-    // Show message label with correct style
-    var lbl = document.getElementById('<%= lblMsg.ClientID %>');
-    if (lbl && lbl.innerText.trim() !== '') {
-        lbl.style.display = 'block';
-        var txt = lbl.innerText.toLowerCase();
-        if (txt.indexOf('failed') > -1 || txt.indexOf('invalid') > -1 || txt.indexOf('please') > -1)
-            lbl.classList.add('error');
-    }
-
-    // Map display header labels to colour group
-    var groups = {
-        'Priority Focus':'priority', 'Integration Programme':'priority', 'Leading Department':'priority',
-        'Desired Outcome':'outcome', 'Outcome Indicator':'outcome', 'Indicator Type':'outcome',
-        'Baseline Value':'outcome', 'Term Target Value':'outcome', 'Annual Budget':'outcome',
-        'Implementing Institution':'inst', 'Supporting Institutions':'inst',
-        'Is Cumulative':'inst', 'Is Percentage':'inst',
-        'Intervention Name':'interv', 'Intervention Indicator':'interv',
-        'Baseline 2023/24':'interv', 'Term Target 2030':'interv',
-        'Term Budget':'interv', 'Annual Target 2025/26':'interv', 'Spatial Reference':'interv'
-    };
-
-    var tbl = document.querySelector('.pmtdp-tbl');
-    if (tbl) {
-        var headers = tbl.querySelectorAll('th');
-        var colGroups = [];
-        headers.forEach(function (th) {
-            var g = groups[th.innerText.trim()] || '';
-            colGroups.push(g);
-            if (g) th.classList.add('col-' + g);
-        });
-
-        var dataRows = tbl.querySelectorAll('tr');
-        var idx = 0;
-        dataRows.forEach(function (row) {
-            if (row.querySelector('th')) return;
-            if (idx % 2 === 1) row.classList.add('alt');
-            idx++;
-            row.querySelectorAll('td').forEach(function (td, i) {
-                if (colGroups[i]) td.classList.add('col-' + colGroups[i] + '-td');
-            });
-        });
-    }
-}());
-</script>
 </asp:Content>
