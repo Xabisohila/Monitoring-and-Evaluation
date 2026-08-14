@@ -78,21 +78,12 @@
         border:none; background:#1d6f42; color:#fff; cursor:pointer;
     }
     .btn-save:hover { background:#155a34; }
-    .btn-poa {
-        display:inline-block; padding:7px 14px; font-size:12px; font-weight:600;
-        border-radius:7px; border:1px solid #0b5ed7; color:#0b5ed7;
-        background:#eff6ff; text-decoration:none;
-    }
-    .btn-poa:hover { background:#0b5ed7; color:#fff; text-decoration:none; }
     .btn-upload-poa {
         display:inline-block; padding:7px 14px; font-size:12px; font-weight:600;
         border-radius:7px; border:1px solid #12826A; color:#12826A;
         background:#f0fdf4; text-decoration:none; margin-left:6px;
     }
     .btn-upload-poa:hover { background:#12826A; color:#fff; text-decoration:none; }
-    .lnk-edit { font-size:12px; color:#94a3b8; margin-left:10px; text-decoration:none; }
-    .lnk-edit:hover { color:#475569; }
-
     /* toast */
     #toast {
         display:none; position:fixed; bottom:28px; right:28px;
@@ -187,16 +178,9 @@
             <%-- 4. Actions --%>
             <asp:TemplateField HeaderText="Actions">
                 <ItemTemplate>
-                    <asp:HyperLink ID="lnkCreatePOA" runat="server"
-                        NavigateUrl='<%# "pageAddPOA.aspx?priorityId=" + Eval("PMTDP_PriorityID") %>'
-                        CssClass="btn-poa">+ Create POA</asp:HyperLink>
                     <asp:HyperLink ID="lnkUploadPOA" runat="server"
                         NavigateUrl="i_POAUpload.aspx"
-                        CssClass="btn-upload-poa">&#8679; Upload POA</asp:HyperLink>
-                    <asp:HyperLink ID="lnkEdit" runat="server" CssClass="lnk-edit"
-                        NavigateUrl='<%# "addEditPriority.aspx?id=" + Eval("PMTDP_PriorityID") %>'>
-                        Edit
-                    </asp:HyperLink>
+                        CssClass="btn-upload-poa">Upload POA</asp:HyperLink>
                 </ItemTemplate>
             </asp:TemplateField>
 

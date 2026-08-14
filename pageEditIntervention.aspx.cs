@@ -45,7 +45,7 @@ public partial class pageEditIntervention : System.Web.UI.Page
         ddlPOA.DataBind();
         ddlPOA.Items.Insert(0, new ListItem("-- Select POA --", "0"));
 
-        DataTable dtInstitutions = dal.GetAllLeadInstitutionsLookup();
+        DataTable dtInstitutions = dal.GetAllImplementationInstitutionsLookup();
         ddlLeadInstitution.DataSource     = dtInstitutions;
         ddlLeadInstitution.DataTextField  = "InstitutionName";
         ddlLeadInstitution.DataValueField = "InstitutionID";

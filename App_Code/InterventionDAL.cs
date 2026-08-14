@@ -164,6 +164,13 @@ public class InterventionDAL
 
     public DataTable GetAllLeadInstitutionsLookup()
     {
+        return ExecuteDataTable("SELECT DepartmentID AS InstitutionID, DepartmentName AS InstitutionName FROM dbo.i_Departments ORDER BY DepartmentName");
+    }
+
+    // Used by pageEditIntervention — must match new_ImplementationInstitutions
+    // because new_SP_GetPOADetails_2 and new_SP_GetInterventionDetails_2 INNER JOIN that table.
+    public DataTable GetAllImplementationInstitutionsLookup()
+    {
         return ExecuteDataTable("SELECT InstitutionID, InstitutionName FROM new_ImplementationInstitutions ORDER BY InstitutionName");
     }
 

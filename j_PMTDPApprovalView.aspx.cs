@@ -88,7 +88,7 @@ public partial class j_PMTDPApprovalView : Page
                 litUploadDate.Text = header.UploadDate != DateTime.MinValue
                     ? header.UploadDate.ToString("dd MMM yyyy HH:mm") : "—";
                 litReviewer.Text   = !string.IsNullOrEmpty(header.ReviewerName)
-                    ? Server.HtmlEncode(header.ReviewerName) : "—";
+                    ? Server.HtmlEncode(header.ReviewerName) : "-";
                 string rawName = Path.GetFileName(header.FilePath);
                 // Strip the leading ticks prefix added on save (e.g. "639208333267843517_")
                 int sep = rawName.IndexOf('_');

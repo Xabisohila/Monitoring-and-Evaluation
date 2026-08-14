@@ -48,18 +48,15 @@ public partial class i_PMTDPPriorityList : Page
         // ── Show/hide cluster status panels ──────────────────────────────
         bool hasCluster = row["ClusterID"] != DBNull.Value;
 
-        var pnlUnassigned = (Panel)e.Row.FindControl("pnlUnassigned");
-        var pnlAssigned   = (Panel)e.Row.FindControl("pnlAssigned");
+        var pnlUnassigned  = (Panel)e.Row.FindControl("pnlUnassigned");
+        var pnlAssigned    = (Panel)e.Row.FindControl("pnlAssigned");
         var lblClusterName = (Label)e.Row.FindControl("lblClusterName");
-        var lnkCreatePOA  = (HyperLink)e.Row.FindControl("lnkCreatePOA");
 
         pnlUnassigned.Visible = !hasCluster;
         pnlAssigned.Visible   =  hasCluster;
 
         if (hasCluster)
             lblClusterName.Text = row["ClusterName"].ToString();
-
-        lnkCreatePOA.Visible = hasCluster;
 
         // ── Populate cluster dropdown ─────────────────────────────────────
         var ddl = (DropDownList)e.Row.FindControl("ddlCluster");
